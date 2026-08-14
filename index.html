@@ -2307,8 +2307,11 @@ function pathU(){
 
 /* ============ 結算 ============ */
 /* 門檻依各聯盟場次體量校準：台灣 36 場／CBA 46 場／NBA 82 場 */
-/* 門檻取自 150 局實測的評價分分佈（TW 中位 ~11,500／75% ~19,000／90% ~27,000） */
-const TIER_TH={TW:[42000,31000,19500,10000],CBA:[40000,29500,18500,9500],NBA:[50000,35000,21500,11000]};
+/* 門檻取自 200 局實測（潛力上限 +8 之後）的評價分分佈：
+   TW n=187 → 25% 31,632／中位 44,165／75% 55,424／90% 64,394
+   名人堂取 80 百分位、世代代表 60、明星球員 35、主力輪替 15，目標名人堂率約 20%。
+   CBA／NBA 樣本過小（17／6），依 TW 的調整倍率（×1.39）等比放大。 */
+const TIER_TH={TW:[58500,53000,44000,30000],CBA:[55500,50000,41000,27000],NBA:[69500,62000,50000,33000]};
 const TIER_N=['名人堂','世代代表','明星球員','主力輪替','一頁過客'];
 /* 生涯評價分：例行賽為主，季後賽／分區冠軍賽／總冠軍賽加權（大場面更值錢） */
 function careerScore(box){
@@ -2352,7 +2355,10 @@ function tierOf(b){
   const box=S.stats[b];if(!box||!box.RS)return null;
   const hs=honorScore(b),sc=careerScore(box)+hs.sc,th=TIER_TH[b];
   let i=sc>=th[0]?0:sc>=th[1]?1:sc>=th[2]?2:sc>=th[3]?3:4;
-  if(hs.mvp>=2)i=Math.min(i,1);else if(hs.mvp===1)i=Math.min(i,2);else if(hs.king>=2)i=Math.min(i,3);
+  /* 榮譽保底：門檻依實測獎項通膨上調（年度 MVP 平均每局 2.56 座、單項王 8.08 座）。
+     舊值 mvp>=2 保底世代代表，導致七成生涯都被推上第二級，分數門檻形同失效。 */
+  if(hs.mvp>=6)i=Math.min(i,1);else if(hs.mvp>=3)i=Math.min(i,2);
+  else if(hs.mvp>=1||hs.king>=4)i=Math.min(i,3);
   return {i,sc:Math.round(sc),name:LGN[b]+TIER_N[i]};
 }
 function primaryPos(){
@@ -2579,7 +2585,7 @@ function endGame(reason){
 }
 
 /* ============ 啟動 ============ */
-const APP_VER='v1.5';
+const APP_VER='v1.6';
 let selStyle='G';
 (function(){const v=$('ver-badge');if(v)v.textContent=APP_VER;
   const tv=$('tag-ver');if(tv)tv.textContent=APP_VER;
