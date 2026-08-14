@@ -1,0 +1,2394 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d1218">
+<title>HBL Life 台灣籃球人生模擬器</title>
+<meta name="description" content="從 HBL 高中三年開始的台灣籃球生涯模擬。抽高、位置、洋將壓縮、曝光度、選秀、旅外 CBA 與 NBA、兵役、傷病、引退與名人堂——每一個決定都算數。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="HBL Life 台灣籃球人生模擬器">
+<meta property="og:description" content="從 HBL 高中三年開始的台灣籃球生涯模擬。抽高、位置、洋將壓縮、曝光度、選秀、旅外 CBA 與 NBA、兵役、傷病、引退與名人堂——每一個決定都算數。">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HBL Life 台灣籃球人生模擬器">
+<meta name="twitter:description" content="從 HBL 高中三年開始的台灣籃球生涯模擬。抽高、位置、洋將壓縮、曝光度、選秀、旅外 CBA 與 NBA、兵役、傷病、引退與名人堂——每一個決定都算數。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2214%22%20fill%3D%22%23e07a4e%22%20stroke%3D%22%237a3312%22%20stroke-width%3D%221.5%22%2F%3E%3Cpath%20d%3D%22M2%2016h28M16%202v28M6%206q10%2010%200%2020M26%206q-10%2010%200%2020%22%20stroke%3D%22%237a3312%22%20stroke-width%3D%221.3%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Ccircle%20cx%3D%2216%22%20cy%3D%2216%22%20r%3D%2214%22%20fill%3D%22%23e07a4e%22%20stroke%3D%22%237a3312%22%20stroke-width%3D%221.5%22%2F%3E%3Cpath%20d%3D%22M2%2016h28M16%202v28M6%206q10%2010%200%2020M26%206q-10%2010%200%2020%22%20stroke%3D%22%237a3312%22%20stroke-width%3D%221.3%22%20fill%3D%22none%22%2F%3E%3C%2Fsvg%3E">
+<style>
+:root{
+  /* 色彩 tokens：深色記分板（單一視覺世界，明確塗背景） */
+  --bg:#0b1016; --panel:#151c25; --panel2:#1d2632; --panel3:#243040; --edge:#2c3948;
+  --ink:#e9eef5; --dim:#93a2b8; --amber:#f5ac4e; --clay:#e07a4e;
+  --good:#7fd6a2; --bad:#e87a6b; --blue:#8bbcf0; --gold:#ffd47a;
+  /* 間距節奏 8/12/16/24（dense dashboard 級） */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px;
+  --tap:44px;                      /* 最小觸控尺寸 */
+  --r1:8px; --r2:10px; --r3:14px;
+  --t:180ms cubic-bezier(.2,.7,.3,1);
+  --mono:ui-monospace,"Cascadia Mono",Consolas,"SFMono-Regular",monospace;
+  --sans:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;
+  background-image:radial-gradient(ellipse 120% 55% at 50% -10%,#1d2c3d55 0%,transparent 60%);
+  padding-bottom:env(safe-area-inset-bottom)}
+#app{max-width:560px;margin:0 auto;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* 開場 */
+#start{max-width:560px;margin:0 auto;padding:34px 20px 60px}
+#start h1{font-size:27px;font-weight:900;letter-spacing:-.01em;line-height:1.2}
+#start .tag{color:var(--amber);font-size:11.5px;letter-spacing:.2em;font-weight:700;text-transform:uppercase}
+#start p.lead{color:var(--dim);font-size:14px;margin:10px 0 24px}
+label{display:block;font-size:11.5px;letter-spacing:.14em;color:var(--dim);font-weight:700;margin:18px 0 6px;text-transform:uppercase}
+input{width:100%;background:#0f1620;color:var(--ink);border:1px solid var(--edge);border-radius:8px;
+  padding:9px 11px;font-family:inherit;font-size:15px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.seg button{background:var(--panel);border:1px solid var(--edge);color:var(--dim);border-radius:var(--r2);
+  padding:12px;min-height:var(--tap);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;
+  text-align:left;transition:border-color var(--t),background var(--t),color var(--t)}
+.seg button:hover{border-color:#3d4d61;background:var(--panel2)}
+.seg button:active{background:var(--panel3)}
+.seg button small{display:block;font-weight:400;font-size:11.5px;opacity:.8;margin-top:2px}
+.seg button.on{border-color:var(--amber);color:var(--amber);background:#f5ac4e14}
+/* 位置群卡片：一行一個，資訊分三層（名稱／能力／養成路徑＋難度） */
+.seg-pos{grid-template-columns:1fr}
+.seg-pos button{display:grid;gap:2px;padding:13px 14px}
+.seg-pos b{font-size:16.5px;color:var(--ink)}
+.seg-pos button.on b{color:var(--amber)}
+.seg-pos .tree{display:block;font-weight:400;font-size:12px;color:var(--blue);margin-top:4px;
+  font-family:var(--mono);letter-spacing:-.2px}
+.seg-pos .tree i{font-style:normal;opacity:.6;padding:0 2px}
+.seg-pos .diff{display:inline-block;justify-self:start;margin-top:6px;font-size:11px;font-weight:700;
+  padding:2px 8px;border-radius:99px;border:1px solid currentColor;letter-spacing:.05em}
+.diff-1{color:var(--good)} .diff-2{color:var(--amber)} .diff-3{color:var(--clay)}
+.hint{color:var(--dim);font-size:12.5px;margin-top:var(--s3);line-height:1.7}
+.seedline{color:var(--dim);font-size:12.5px;margin-top:var(--s4);line-height:1.8}
+
+/* 記分板 */
+#board{position:sticky;top:0;z-index:20;background:linear-gradient(#1a2532,#141c25);
+  border-bottom:2px solid var(--edge);padding:9px 13px 7px;box-shadow:0 6px 18px #0009}
+#bd-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+#bd-name{font-weight:900;font-size:16px;line-height:1.25}
+#bd-name small{display:block;font-weight:400;font-size:11.5px;color:var(--dim)}
+#bd-team{font-size:12.5px;font-weight:900;color:var(--amber);text-align:right}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--edge);margin-top:var(--s2);
+  border:1px solid var(--edge);border-radius:var(--r1);overflow:hidden}
+.cell{background:#121a23;padding:5px 6px;text-align:center}
+.cell b{display:block;font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums;line-height:1.3}
+.cell span{font-size:9.5px;letter-spacing:.1em;color:var(--dim)}
+/* 位置養成路徑：現在在哪一階、下一階是什麼 */
+.path{display:flex;align-items:center;flex-wrap:wrap;gap:3px;margin-top:7px;font-size:11.5px;color:var(--dim)}
+.path span{padding:1px 7px;border:1px solid var(--edge);border-radius:99px;background:#121a23;white-space:nowrap}
+.path span.on{color:var(--amber);border-color:var(--amber);font-weight:700;background:#f5ac4e14}
+.path span.ghost{opacity:.45;border-style:dashed}
+.path i{font-style:normal;opacity:.5}
+.lamps{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px}
+.lamp{display:grid;gap:3px;justify-items:center}
+.lamp i{display:block;width:100%;height:3px;background:var(--edge);border-radius:2px;transition:background var(--t)}
+.lamp span{font-size:9.5px;color:#5f6f83;letter-spacing:.08em;transition:color var(--t)}
+.lamp.on i{background:var(--amber)}
+.lamp.on span{color:var(--amber)}
+
+/* 日誌 */
+#log{flex:1;padding:12px 13px 20px}
+.yr-block{margin-bottom:12px}
+.yr-head{font-family:var(--mono);font-size:12.5px;color:var(--amber);letter-spacing:.06em;
+  border-bottom:1px dashed var(--edge);padding:6px 2px;cursor:pointer;font-weight:700}
+.yr-block.collapsed .yr-body{display:none}
+.card{background:var(--panel);border:1px solid var(--edge);border-left:3px solid var(--edge);
+  border-radius:var(--r1);padding:11px 13px;margin:var(--s2) 0;font-size:14.5px;line-height:1.7}
+.card h4{font-size:11.5px;letter-spacing:.12em;color:var(--dim);font-weight:700;margin-bottom:5px}
+.card.good{border-left-color:var(--good)} .card.bad{border-left-color:var(--bad)}
+.card.gold{border-left-color:var(--gold);background:linear-gradient(90deg,#ffd47a12,transparent 60%)}
+.card.info{border-left-color:var(--blue)}
+.statline{font-family:var(--mono);font-size:12.5px;color:#a9b8cc;margin-top:6px;line-height:1.75;
+  overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+
+/* ---------- 生涯里程碑（抵達新舞台）：藍色橫幅，一輩子只出現一次 ---------- */
+.card.mile{border:1px solid #2f4a6b;border-left:3px solid var(--blue);
+  background:linear-gradient(135deg,#12233a 0%,var(--panel) 62%);padding:14px 15px}
+.card.mile .mile-eb{font-size:10.5px;letter-spacing:.22em;color:var(--blue);font-weight:700}
+.card.mile .mile-t{font-size:26px;font-weight:900;line-height:1.15;margin-top:4px;letter-spacing:-.01em;color:#eaf2ff}
+.card.mile .mile-s{font-size:13.5px;color:var(--blue);font-weight:700;margin-top:2px}
+.card.mile .mile-d{font-size:13.5px;color:#b9c6d6;margin-top:8px;line-height:1.8}
+.card.mile .mile-f{font-family:var(--mono);font-size:11.5px;color:var(--dim);margin-top:10px;
+  border-top:1px dashed #2f4a6b;padding-top:7px}
+/* NBA：最高殿堂＝聚光燈。刻意維持藍白色系，與金色的「獎項」通知分家 */
+.card.mile-top{border:1px solid #3b6ea8;border-left:4px solid #cfe3ff;padding:18px 16px 15px;
+  background:radial-gradient(120% 80% at 18% -30%,#2b5c94 0%,#12233a 46%,#0f1620 100%);
+  box-shadow:0 0 0 1px #cfe3ff1a inset,0 6px 22px #0008;position:relative;overflow:hidden}
+.card.mile-top::before{content:'';position:absolute;left:-10%;top:-70%;width:52%;height:190%;
+  background:linear-gradient(100deg,transparent,#ffffff22 46%,transparent 60%);transform:rotate(8deg)}
+.card.mile-top .mile-eb{color:#cfe3ff;letter-spacing:.3em}
+.card.mile-top .mile-t{font-size:38px;color:#fff;text-shadow:0 0 26px #9ec7ff66;letter-spacing:.02em}
+.card.mile-top .mile-s{color:#cfe3ff;font-size:14.5px}
+.card.mile-top .mile-d{color:#cfd9e6}
+.card.mile-top .mile-f{border-top-color:#3b6ea8;color:#9bb3cc}
+@media (prefers-reduced-motion:reduce){.card.mile-top::before{display:none}}
+
+/* ---------- 年度獎項：金色獎盃標籤列，與里程碑明顯區隔 ---------- */
+.card.award{border:1px solid #5a4a20;border-left:3px solid var(--gold);
+  background:linear-gradient(90deg,#ffd47a10,transparent 55%)}
+.card.award h4{color:var(--gold);letter-spacing:.1em}
+.aw{display:inline-block;font-size:12.5px;font-weight:700;color:var(--gold);
+  border:1px solid #6b5828;background:#241f12;border-radius:99px;padding:3px 10px;margin:3px 5px 0 0}
+.aw-big{color:#0f1620;background:linear-gradient(180deg,#ffe9b8,var(--gold));border-color:var(--gold);
+  box-shadow:0 1px 0 #8a6f2a}
+.aw-pt{font-family:var(--mono);font-size:12px;color:var(--gold);margin-top:9px;
+  border-top:1px dashed #5a4a20;padding-top:7px}
+.aw-pt b{font-size:14px}
+
+/* ---------- 球迷留言：依分類上色，一眼看出是致敬還是被酸 ---------- */
+.fan{font-size:13.5px;line-height:1.8;margin:7px 0;padding:6px 10px;border-radius:var(--r1);
+  background:#121a23;border-left:3px solid var(--edge);color:#c3cfdd}
+.fan-tag{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.1em;
+  padding:0 6px;border-radius:99px;margin-right:7px;vertical-align:1px;border:1px solid currentColor}
+.fan-c1{border-left-color:var(--gold)} .fan-c1 .fan-tag{color:var(--gold)}
+.fan-c2{border-left-color:var(--blue)} .fan-c2 .fan-tag{color:var(--blue)}
+.fan-c3{border-left-color:var(--bad)}  .fan-c3 .fan-tag{color:var(--bad)}
+.fan-c4{border-left-color:var(--good)} .fan-c4 .fan-tag{color:var(--good)}
+.fan-c5{border-left-color:var(--clay)} .fan-c5 .fan-tag{color:var(--clay)}
+.up{color:var(--good);font-weight:700} .dn{color:var(--bad);font-weight:700}
+.hl{color:var(--amber);font-weight:700}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border:1px solid var(--edge);
+  border-radius:99px;color:var(--dim);margin:2px 4px 2px 0}
+.pill.g{color:var(--gold);border-color:var(--gold)}
+.pill.b{color:var(--bad);border-color:var(--bad)}
+.pill.strike{text-decoration:line-through;opacity:.45}
+table.fin{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:11px;margin-top:6px}
+table.fin th,table.fin td{border-bottom:1px solid var(--edge);padding:3px 4px;text-align:right}
+table.fin th{color:var(--dim);font-weight:700;font-size:10px}
+table.fin td.l,table.fin th.l{text-align:left}
+.scroll{overflow-x:auto}
+
+/* 選項 */
+/* 底部操作區：高度上限＝視窗減去記分板，內容過長時自己滾，不會把骰子推出畫面 */
+#act{position:sticky;bottom:0;background:linear-gradient(#0b101600,#0b1016 24%);
+  padding:var(--s3) var(--s3) calc(var(--s4) + env(safe-area-inset-bottom));
+  /* --boardH 由 JS 依記分板實際高度寫入；再留 112px 給日誌，
+     否則操作區會佔滿整個畫面，剛拿到的大賽點數／擲骰卡片被壓在上面看不到 */
+  max-height:calc(100vh - var(--boardH,170px) - 112px);
+  max-height:calc(100dvh - var(--boardH,170px) - 112px);overflow-y:auto}
+/* 加點模式：骰子與按鈕固定，只有能力列捲動 */
+#act.alloc{display:flex;flex-direction:column;overflow:hidden}
+#act.alloc>.title,#act.alloc>#al-top,#act.alloc>.al-note,#act.alloc>.legend,#act.alloc>#al-btm{flex:0 0 auto}
+#act.alloc>#al-rows{flex:1 1 auto;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  min-height:88px;overscroll-behavior:contain}
+/* 復原／確認並排成一列，省下一整個按鈕高度給能力列 */
+#al-btm{display:grid;grid-template-columns:1fr 1.4fr;gap:var(--s2);margin-top:var(--s2)}
+#al-btm .btn{margin:0}
+#act.alloc>#al-top{position:sticky;top:0;z-index:2;background:var(--bg);padding-bottom:2px}
+#act .title{font-size:13.5px;color:var(--dim);margin-bottom:var(--s2);font-weight:700;line-height:1.5}
+.btn{display:block;width:100%;min-height:var(--tap);text-align:left;background:var(--panel2);color:var(--ink);
+  border:1px solid var(--edge);border-radius:var(--r2);padding:11px 13px;margin:var(--s2) 0;
+  font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;
+  transition:background var(--t),border-color var(--t),transform 90ms ease-out}
+.btn:hover:not(:disabled){background:var(--panel3);border-color:#3d4d61}
+.btn:active:not(:disabled){background:#2b3746;transform:translateY(1px)}
+.btn small{display:block;font-weight:400;font-size:12px;color:var(--dim);margin-top:3px;line-height:1.5}
+.btn.main{border-color:var(--amber);color:var(--amber);background:#f5ac4e0f}
+.btn.main:hover{background:#f5ac4e1f}
+.btn.warn{border-color:var(--clay);color:var(--clay);background:#e07a4e0d}
+.btn.warn:hover{background:#e07a4e1c}
+.btn:disabled{opacity:.32;cursor:default}
+
+/* 加點 */
+/* 加點面板：骰子列（白底、放大 50%）→ 能力列（44px 觸控高）→ 復原／確認 */
+#dice{display:flex;gap:7px;margin:2px 0 var(--s3);flex-wrap:wrap;align-items:center}
+.die{width:51px;height:51px;border:2px solid #cfd8e4;border-radius:12px;display:grid;place-items:center;
+  font-family:var(--mono);font-weight:800;font-size:23px;line-height:1;
+  background:#f4f7fb;color:#111820;box-shadow:0 2px 0 #b7c3d2,0 3px 8px #0006;
+  transition:box-shadow var(--t),border-color var(--t),opacity var(--t)}
+.die.active{border-color:var(--amber);box-shadow:0 0 0 3px #f5ac4e55,0 2px 0 #b7c3d2,0 3px 10px #0007}
+.die.used{opacity:.3;box-shadow:none}
+.die.six{color:#8a5a00;border-color:var(--gold);background:#fff3d6}
+.dice-note{font-size:12.5px;color:var(--dim);margin-left:auto}
+/* 重點說明：解釋「重點」是怎麼算出來的（會隨位置改變）；最多兩行，完整說明在起始頁彈窗 */
+.al-note{font-size:11.5px;color:#9fb0c6;background:#121a23;border:1px solid var(--edge);
+  border-radius:var(--r1);padding:5px 8px;margin:0 0 var(--s2);line-height:1.55;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.abrow{display:grid;grid-template-columns:5.4em 1fr 4.6em;align-items:center;gap:var(--s2);
+  min-height:var(--tap);padding:6px var(--s2);border:1px solid transparent;border-radius:var(--r1);
+  cursor:pointer;font-size:13.5px;transition:background var(--t),border-color var(--t)}
+.abrow:hover{background:var(--panel2);border-color:var(--edge)}
+.abrow:active{background:var(--panel3)}
+.abrow.capped{opacity:.38;cursor:default}
+/* 點數分配完畢：列不再可點，也不該看起來可點 */
+#al-rows.locked .abrow{cursor:default;opacity:.6}
+#al-rows.locked .abrow:hover{background:none;border-color:transparent}
+.abrow .nm{color:var(--ink)}
+.abrow.key .nm{color:var(--amber)}      /* 這個位置吃重的能力 */
+.abrow.key .nm::after{content:'·重點';font-size:10px;opacity:.75;margin-left:3px;letter-spacing:.05em}
+.abar{position:relative;height:10px;background:#0f1620;border:1px solid var(--edge);border-radius:3px;overflow:visible}
+.abar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#5f93c9,var(--blue));border-radius:2px;
+  transition:width var(--t)}
+.abar em{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--clay)}
+.abrow .v{text-align:right;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums;
+  line-height:1.25}
+.abrow .v small{color:var(--dim);opacity:.75}
+.abrow .v small.cst{display:block;font-size:10px}
+.pool{font-size:13.5px;color:var(--amber);font-weight:700;margin-bottom:var(--s2)}
+.legend{display:flex;gap:var(--s3);font-size:11px;color:var(--dim);margin:2px 0 var(--s2);flex-wrap:wrap}
+.legend b{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:4px;border-radius:2px}
+.legend .lg-v b{background:var(--blue)} .legend .lg-p b{background:var(--clay)}
+.legend.rule{color:#9fb0c6;background:#121a23;border:1px solid var(--edge);border-radius:var(--r1);
+  padding:5px 8px;display:block;font-size:11.5px;line-height:1.6}
+.legend.rule b{width:auto;height:auto;background:none;color:var(--amber);font-weight:700;margin:0}
+/* 矮螢幕（例如 iPhone SE 直立）：省掉顏色圖例，把空間讓給能力列 */
+@media (max-height:720px){
+  #act.alloc>.legend:not(.rule){display:none}
+  #act.alloc>.al-note{font-size:11.5px;padding:5px 8px;margin-bottom:6px}
+  #act.alloc>.title{font-size:12.5px;margin-bottom:5px}
+}
+footer.cr{color:var(--dim);font-size:11.5px;text-align:center;padding:14px 13px 10px;line-height:1.8;flex:0 0 auto}
+
+/* ---------- 說明彈窗 ---------- */
+/* 必須放在最前面：ID 選擇器的 display:flex 會蓋掉瀏覽器對 [hidden] 的 display:none，
+   所以要用 #id[hidden] 這種更高特異性的規則把它關回去，否則彈窗永遠關不掉。 */
+#info-modal[hidden],#info-scrim[hidden]{display:none}
+#info-scrim{position:fixed;inset:0;background:rgba(4,7,11,.66);z-index:60;
+  animation:fadeIn 160ms ease-out}
+#info-modal{position:fixed;z-index:61;left:50%;transform:translateX(-50%);
+  bottom:0;width:min(560px,100%);max-height:88dvh;display:flex;flex-direction:column;
+  background:var(--panel);border:1px solid var(--edge);border-bottom:0;
+  border-radius:var(--r3) var(--r3) 0 0;box-shadow:0 -12px 40px #000a;
+  animation:slideUp 200ms cubic-bezier(.2,.7,.3,1)}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translate(-50%,14px);opacity:.6}to{transform:translate(-50%,0);opacity:1}}
+@media (prefers-reduced-motion:reduce){#info-scrim,#info-modal{animation:none}}
+.im-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  padding:var(--s3) var(--s4);border-bottom:1px solid var(--edge);background:var(--panel2);
+  border-radius:var(--r3) var(--r3) 0 0;position:sticky;top:0}
+.im-head h2{font-size:16px;font-weight:900;color:var(--amber);letter-spacing:.02em}
+#info-close{width:var(--tap);height:var(--tap);min-width:var(--tap);border:1px solid var(--edge);
+  background:var(--panel);color:var(--ink);border-radius:var(--r1);font-size:16px;cursor:pointer;
+  display:grid;place-items:center;transition:background var(--t),border-color var(--t)}
+#info-close:hover{background:var(--panel3);border-color:#3d4d61}
+.im-body{overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:var(--s4) var(--s4) calc(var(--s5) + env(safe-area-inset-bottom));font-size:13.5px;line-height:1.8}
+.im-body h3{font-size:13px;color:var(--amber);letter-spacing:.08em;font-weight:700;
+  margin:var(--s4) 0 var(--s2);padding-bottom:4px;border-bottom:1px dashed var(--edge)}
+.im-body h3:first-child{margin-top:0}
+.im-body p{color:#b9c6d6;margin:var(--s2) 0}
+.im-body ul{margin:var(--s2) 0 var(--s2) 1.1em;color:#b9c6d6}
+.im-body li{margin:5px 0}
+.im-body b{color:var(--ink)}
+.im-body code{font-family:var(--mono);font-size:12px;background:#121a23;border:1px solid var(--edge);
+  border-radius:4px;padding:1px 5px;color:var(--amber)}
+.im-tree{font-family:var(--mono);font-size:11.5px;line-height:1.75;background:#121a23;
+  border:1px solid var(--edge);border-radius:var(--r1);padding:10px;overflow-x:auto;color:#a9b8cc}
+.im-tree b{color:var(--gold)}
+.im-tab{width:100%;border-collapse:collapse;font-size:12.5px;margin:var(--s2) 0}
+.im-tab th,.im-tab td{border:1px solid var(--edge);padding:6px 8px;text-align:left;vertical-align:top}
+.im-tab th{background:var(--panel2);color:var(--dim);font-size:11.5px;letter-spacing:.06em}
+.im-tab td{color:#b9c6d6}
+.im-note{font-size:12.5px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div id="start">
+  <p class="tag">台灣籃球生涯模擬 · <span id="tag-ver">v0.4</span></p>
+  <h1>HBL Life<br>台灣籃球人生模擬器</h1>
+  <p class="lead">從高一開始的十六年。你會長到多高是隨機的，位置由身高決定，上場時間被洋將壓縮，曝光度決定有沒有人來找你。同一顆種子＋同樣的選擇＝同一段人生。</p>
+
+  <label for="in-name">球員姓名</label>
+  <input id="in-name" maxlength="10" placeholder="留空＝隨機命名">
+
+  <label id="lb-pos">起始位置群（之後依能力分化，還能再進化）</label>
+  <div class="seg seg-pos" id="seg-style" role="radiogroup" aria-labelledby="lb-pos">
+    <button data-v="G" class="on" role="radio" aria-checked="true">
+      <b>後衛</b><small>控球／視野／三分</small>
+      <span class="tree">控球後衛／得分後衛 <i>→</i> 雙能衛</span>
+      <span class="diff diff-3">養成難度 高</span></button>
+    <button data-v="F" role="radio" aria-checked="false">
+      <b>前鋒</b><small>切入／三分／單防／彈跳</small>
+      <span class="tree">小前鋒／大前鋒 <i>→</i> 全能鋒線</span>
+      <span class="diff diff-2">養成難度 中</span></button>
+    <button data-v="C" role="radio" aria-checked="false">
+      <b>中鋒</b><small>籃板／彈跳／單防</small>
+      <span class="tree">中鋒（不分化）</span>
+      <span class="diff diff-1">養成難度 低</span></button>
+  </div>
+  <p class="hint">身高依位置群隨機抽（後衛 181±5、前鋒 194±5、中鋒 204±5 公分），高中三年還會長。長太高或沒長高，都有機會轉到別的位置群。</p>
+
+  <label for="seed-show">世界種子</label>
+  <input id="seed-show" maxlength="24" class="mono">
+  <p class="seedline">相同種子＋相同選擇＝相同人生。<a href="#" id="seed-re" style="color:var(--blue)">換一顆</a></p>
+
+  <button class="btn main" style="margin-top:22px;text-align:center" id="btn-start">開始生涯 ▸ 高一夏天</button>
+  <button class="btn" style="text-align:center" id="btn-info" aria-haspopup="dialog">📖 玩法與位置樹說明</button>
+  <p class="seedline">提示：22 歲前累計擲出 5 次「6」會覺醒隱藏素質。</p>
+</div>
+
+<!-- 說明彈窗 -->
+<div id="info-scrim" hidden></div>
+<div id="info-modal" role="dialog" aria-modal="true" aria-labelledby="info-title" hidden>
+  <div class="im-head">
+    <h2 id="info-title">玩法與位置樹</h2>
+    <button id="info-close" aria-label="關閉說明">✕</button>
+  </div>
+  <div class="im-body">
+    <h3>位置樹</h3>
+    <pre class="im-tree">後衛 ─┬─ 控球後衛 ──→ <b>雙能衛</b>（兼具得分與控球）
+      └─ 得分後衛
+前鋒 ─┬─ 小前鋒 ────→ <b>全能鋒線</b>（兼具大小前鋒）
+      └─ 大前鋒
+中鋒 ─── 中鋒（不分化・門檻最低・最好養成）</pre>
+    <p>開場只選<b>位置群</b>。進入職業後才依能力<b>分化</b>成具體位置，站穩前置位置又達標，才會<b>進化</b>。</p>
+
+    <h3>分化規則（進職業後每季重新判定）</h3>
+    <ul>
+      <li><b>後衛</b>：控球＋視野 ≥ 三分＋切入 → 控球後衛，否則得分後衛</li>
+      <li><b>前鋒</b>：三分＋單防 ≥ 籃板＋彈跳 → 小前鋒，否則大前鋒</li>
+      <li><b>中鋒</b>：不分化。門檻是全部位置裡最低的（籃板／彈跳／單防）</li>
+    </ul>
+
+    <h3>進化條件</h3>
+    <ul>
+      <li><b>雙能衛</b>：需先站上控球後衛，且控球、視野、三分同時達標。薪資係數 ×1.16（最高）、上場分鐘 +2</li>
+      <li><b>全能鋒線</b>：需先站上小前鋒，且三分、單防、籃板、彈跳同時達標。薪資係數 ×1.14、上場分鐘 +2</li>
+    </ul>
+
+    <h3>加點面板的「重點」是怎麼算的？</h3>
+    <p>重點＝<b>你現在這個位置需要的能力</b> ＋ <b>你還走得到的下一階需要的能力</b>。所以位置一變，重點就跟著變：</p>
+    <table class="im-tab">
+      <tr><th>你的狀態</th><th>標註的重點</th></tr>
+      <tr><td>還沒分化（高中／大學）</td><td>該群兩條路的能力都算（後衛：控球・視野・三分・切入）</td></tr>
+      <tr><td>已分化到得分後衛／大前鋒</td><td>只剩該位置吃重的（得分後衛：三分・切入）</td></tr>
+      <tr><td>站在控球後衛／小前鋒</td><td>該位置 ＋ 進化所需（雙能衛／全能鋒線）</td></tr>
+      <tr><td>已進化或中鋒</td><td>該位置自己的能力</td></tr>
+    </table>
+    <p class="im-note">體能永遠是重點——它決定上場分鐘上限。</p>
+
+    <h3>數據與獎項</h3>
+    <p>數據採 NBA 官方欄位（<code>GP / MIN / PTS / FGM / FGA / FG% / 3PM / 3PA / 3P% / FTM / FTA / FT% / REB / AST / STL / BLK / +/−</code>），並分成<b>例行賽・季後賽・分區冠軍賽・總冠軍賽</b>四段各自累積。模擬基準來自分級平均數據表（S～F 級 × 五個位置），你的能力值只負責在基準上做修正。</p>
+    <table class="im-tab">
+      <tr><th>類別</th><th>獎項</th></tr>
+      <tr><td>月度</td><td>月最佳球員、月最佳新秀</td></tr>
+      <tr><td>年度</td><td>最有價值球員（米高·佐敦獎）、最佳防守球員（Hakeem Olajuwon 獎）、最佳新人（Wilt Chamberlain 獎）、最佳第六人（John Havlicek 獎）、進步最多球員（George Mikan 獎）、最佳關鍵球員（Jerry West 獎）、本土 MVP（台灣職籃）</td></tr>
+      <tr><td>陣容</td><td>東／西區第一・二・三隊、防守第一・二・三隊</td></tr>
+      <tr><td>單項王</td><td>得分王、助攻王、籃板王、阻攻王、抄截王、三分王</td></tr>
+      <tr><td>季後</td><td>分區冠軍、分區冠軍 MVP、總冠軍、總冠軍 MVP</td></tr>
+      <tr><td>明星週末</td><td>明星賽入選、明星賽 MVP、三分球大賽、灌籃大賽、技術挑戰賽、新秀對抗賽</td></tr>
+      <tr><td>季中</td><td>季中錦標賽（NBA 盃）冠軍與 MVP</td></tr>
+    </table>
+    <p><b>獎項會給能力點</b>（MVP +7、總冠軍 MVP +6、最佳防守 +5、第一隊 +4、單項王 +3、月最佳 +1…），拿獎本身就是養成的一部分。</p>
+
+    <h3>特殊賽事的入選門檻</h3>
+    <ul>
+      <li><b>三分球大賽</b>：當季三分命中率 ≥ 聯盟平均 +2%，且三分能力 ≥ 聯盟基準 +5</li>
+      <li><b>灌籃大賽</b>：彈跳 &gt; 50</li>
+      <li><b>技術挑戰賽</b>：控球＋視野＋籃球 IQ 合計 ≥（基準 +7）×3</li>
+      <li><b>新秀對抗賽</b>：前兩年，且場均上場 ≥ 15 分</li>
+      <li><b>明星賽</b>：依 d 值抽選（〈社群巨星〉有保底）</li>
+    </ul>
+
+    <h3>球員定位標籤</h3>
+    <p>每季依能力與實際數據判定，直接顯示在記分板與結算：</p>
+    <p><b>正評</b>：3D、空間型長人、跑吃型中鋒、禁區守護者、組織前鋒／中鋒、切入手、單打手、團隊黏著劑、微波爐、關鍵先生、鐵血保鏢、休息室老將。</p>
+    <p><b>迷因</b>（會被球迷酸的）：人形角錐（防守 ≤ 基準−6 還打 20 分鐘）、有氧運動員（上場 18 分鐘數據全空）、數據刷子（20 分以上卻 +/− 負值）、籃球恐怖份子（大量出手、低命中、輸球）、定位尷尬、毛巾俠。</p>
+
+    <h3>其他你該知道的</h3>
+    <ul>
+      <li><b>抽高</b>：成年身高出生時暗抽（後衛 181±5／前鋒 194±5／中鋒 204±5 公分），高中三年每年隨機長 1–5 公分。身高是唯一不能用點數練的能力。19–20 歲有 5% 機率二次發育；長太高或沒長高可跨群轉型一次。</li>
+      <li><b>洋將壓縮</b>：台灣職籃每隊 3 名洋將，位置越內線上場時間被壓得越兇（中鋒 ×0.70、後衛 ×1.00）。在 CBA 你是亞洲外援，不壓縮，但連兩年打不出來直接解約。</li>
+      <li><b>主力球員的影響力</b>：綜合達聯盟基準 +6 後會有一次抉擇——留下來把球隊帶起來（奪冠率 +4%），或要求交易到強隊（奪冠率 +10%，但球迷會罵、下張合約 ×0.9）。</li>
+      <li><b>受傷率已大幅調低</b>：基礎 7%（原 15%），年齡加成砍半；〈鐵人〉上限 5%、〈玻璃膝〉下限 22%。</li>
+      <li><b>ACL（膝蓋負荷）</b>：每季累積只算兩成，且<b>生涯最多斷 2 次</b>——實測九成的人一次都不會斷。</li>
+      <li><b>感情</b>：20 歲起每年可能遇到啦啦隊緋聞（要不要官宣）、劈腿或外遇的邀約（賭不賭）。被抓兩次變〈渣男〉，往後每次被抓全能力 −4；三段感情都沒結婚生子則拿到〈閨中密友〉。</li>
+      <li><b>曝光度</b>：名門給冠軍與曝光但球權 ×0.75；新興學校給球權 ×1.30 卻沒人看見。曝光度決定 UBA 招募、選秀順位與代言收入。</li>
+      <li><b>成長成本</b>：能力 &lt;72 每級 1 點、72–77 每級 2 點、78+ 每級 3 點；超過潛力天花板 ×3。未滿一級的點數會存在蓄力槽。</li>
+      <li><b>種子碼</b>：網址加 <code>?seed=xxxx</code> 可重現同一段開局（能力、潛力、成年身高、第一次擲骰完全固定）。之後每個選擇都會推進亂數序列，所以同種子＋不同選擇會長出不同人生。</li>
+    </ul>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <header id="board">
+    <div id="bd-top">
+      <div id="bd-name"></div>
+      <div id="bd-team"></div>
+    </div>
+    <div id="bd-path" class="path" aria-label="位置養成路徑"></div>
+    <div class="grid">
+      <div class="cell"><b id="bd-age">16</b><span>年齡</span></div>
+      <div class="cell"><b id="bd-hgt">—</b><span>身高</span></div>
+      <div class="cell"><b id="bd-ovr">—</b><span>綜合</span></div>
+      <div class="cell"><b id="bd-exp">0</b><span>曝光</span></div>
+      <div class="cell"><b id="bd-sal">0</b><span>累計收入</span></div>
+    </div>
+    <div class="lamps" aria-label="賽季階段">
+      <div class="lamp" id="lp0"><i></i><span>季初</span></div>
+      <div class="lamp" id="lp1"><i></i><span>季中</span></div>
+      <div class="lamp" id="lp2"><i></i><span>季末</span></div>
+    </div>
+  </header>
+  <main id="log"></main>
+  <!-- 版本／重新開始必須排在 #act 之前：若排在後面，捲到頁尾時會把 sticky 操作區
+       往上推、骰子與剛拿到的點數就被記分板蓋住 -->
+  <footer class="cr"><span id="ver-badge">v0.4</span> · <a href="#" id="btn-restart" style="color:var(--blue)">重新開始</a><br>
+  HBL Life — 架構取自 YaKyoLife 的三段式迴圈與五層數值，籃球制度與所有數值為本作原創。<br>學校為真實 HBL／UBA 名稱，職業球隊為避免版命名。</footer>
+  <footer id="act"></footer>
+</div>
+
+<script>
+/* ============ RNG ============ */
+let SEED=new URLSearchParams(location.search).get('seed')||Math.random().toString(36).slice(2,10);
+let _s=0;
+function seedInit(str){_s=1779033703;for(let i=0;i<str.length;i++){_s=Math.imul(_s^str.charCodeAt(i),3432918353);_s=_s<<13|_s>>>19;}}
+function R(){_s|=0;_s=_s+0x6D2B79F5|0;let t=Math.imul(_s^_s>>>15,1|_s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));
+const pick=a=>a[Math.floor(R()*a.length)];
+const chance=p=>R()*100<p;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const N0=sd=>(R()+R()+R()+R()-2)/2*sd*2;
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;};
+
+/* ============ 靜態資料 ============ */
+const ABL={sta:'體能',jmp:'彈跳',iq:'籃球IQ',mid:'中距離',tre:'三分',fin:'切入終結',hdl:'控球',pas:'視野',def:'單防',reb:'籃板'};
+const AKEYS=Object.keys(ABL);
+/* ---- 位置樹：開場選群 → 群內依能力分化 → 分化後還能再進化 ----
+   後衛 ─┬─ 控球後衛 ──→ 雙能衛（兼具得分與控球）
+         └─ 得分後衛
+   前鋒 ─┬─ 小前鋒 ────→ 全能鋒線（兼具大小前鋒）
+         └─ 大前鋒
+   中鋒 ─── 中鋒（門檻最低，養成最容易）                             */
+const GROUP={
+  G:{n:'後衛',bias:{hdl:6,pas:5,tre:3},hgt:[181,5],
+     tree:'控球後衛／得分後衛 → 雙能衛',diff:'養成難度：高（要控球、視野、外線三頭燒）'},
+  F:{n:'前鋒',bias:{fin:5,tre:3,def:3,jmp:2},hgt:[194,5],
+     tree:'小前鋒／大前鋒 → 全能鋒線',diff:'養成難度：中（三分與籃板要兼顧）'},
+  C:{n:'中鋒',bias:{reb:6,jmp:4,def:3},hgt:[204,5],
+     tree:'中鋒（不分化）',diff:'養成難度：低（只看籃板、彈跳、單防）'}
+};
+const POSN={G:'後衛',F:'前鋒',PG:'控球後衛',SG:'得分後衛',CG:'雙能衛',
+  SF:'小前鋒',PF:'大前鋒',AF:'全能鋒線',C:'中鋒'};
+const POS_SHORT={G:'G',F:'F',PG:'PG',SG:'SG',CG:'CG',SF:'SF',PF:'PF',AF:'AF',C:'C'};
+/* 門檻＝相對聯盟基準 B 的位移。中鋒最低（養成最簡單）；雙能衛／全能鋒線最高（進化位置） */
+const POS_REQ={
+  PG:{hdl:2,pas:2},       SG:{tre:2,fin:1},
+  CG:{hdl:4,pas:2,tre:2},                 /* 進化：控球底子 ＋ 得分手段 */
+  SF:{tre:1,def:1},       PF:{reb:2,def:1},
+  AF:{tre:1,def:1,reb:2,jmp:1},           /* 進化：大小前鋒都吃得下 */
+  C:{reb:0,jmp:-2,def:-1}                 /* 中鋒：門檻最低 */
+};
+const POS_SAL={PG:1.10,SG:1.08,CG:1.16,SF:1.06,PF:1.02,AF:1.14,C:1.00,G:1.05,F:1.03};
+const POS_IMP={PG:1.00,SG:0.95,CG:1.00,SF:0.85,PF:0.75,AF:0.85,C:0.70,G:0.97,F:0.80}; /* 洋將壓縮（僅台灣職籃） */
+const POS_REBW={C:1.6,PF:1.4,AF:1.3,SF:1.0,SG:0.75,CG:0.7,PG:0.6,G:0.65,F:1.1};
+const POS_ASTW={PG:1.7,CG:1.5,SG:1.1,SF:0.9,AF:0.85,PF:0.7,C:0.6,G:1.3,F:0.85};
+const POS_DEFW={C:1.25,AF:1.15,PF:1.1,SF:1.0,SG:0.9,CG:0.9,PG:0.85,G:0.88,F:1.0};
+/* 群內候選順序（前者優先，含進化位置） */
+const GROUP_POS={G:['CG','PG','SG'],F:['AF','SF','PF'],C:['C']};
+const EVOLVE={CG:'PG',AF:'SF'};   /* 進化位置 → 必須先站上的前置位置 */
+
+/* ============ 分級平均數據表（校準來源：NBA.xlsx）============
+   欄位：GP, MPG, PTS, FGM, FGA, FG%, 3PM, 3PA, 3P%, FTM, FTA, FT%, REB, AST, STL, BLK, +/-
+   等級 S~F＝球員實力（S 聯盟頂尖、C 聯盟平均、F 板凳末端） */
+const SC={GP:0,MPG:1,PTS:2,FGM:3,FGA:4,FGP:5,TPM:6,TPA:7,TPP:8,FTM:9,FTA:10,FTP:11,REB:12,AST:13,STL:14,BLK:15,PM:16};
+const STAT_TBL={
+ ALL:[[72,35.2,29.2,10.2,19.8,.515,2.6,6.8,.382,6.2,7.5,.827,9.2,8.5,1.4,1.0,6.8],
+      [70,33.5,23.4,8.3,17.2,.483,2.2,5.9,.373,4.6,5.7,.807,6.8,5.2,1.1,0.8,3.8],
+      [68,30.0,16.2,5.8,12.4,.468,1.8,4.9,.367,2.8,3.6,.778,5.2,3.6,0.9,0.6,1.8],
+      [65,24.5,11.6,4.2,9.2,.457,1.4,3.9,.359,1.8,2.4,.750,3.8,2.5,0.8,0.5,0.2],
+      [58,18.5,7.6,2.8,6.3,.444,0.9,2.6,.346,1.1,1.5,.733,2.8,1.6,0.6,0.4,-1.2],
+      [42,11.5,4.3,1.6,3.8,.421,0.5,1.5,.333,0.6,0.9,.667,1.8,0.9,0.4,0.2,-2.8],
+      [20,5.2,1.7,0.6,1.6,.375,0.2,0.7,.286,0.3,0.5,.600,0.8,0.4,0.2,0.1,-4.2]],
+ PG:[[72,35.5,28.8,9.8,20.4,.480,3.4,8.9,.382,5.8,6.8,.853,5.2,9.6,1.5,0.4,6.2],
+     [70,34.0,23.1,8.1,17.2,.471,2.7,7.3,.370,4.2,5.0,.840,4.2,7.5,1.2,0.3,3.5],
+     [68,29.5,15.2,5.3,11.8,.449,2.1,5.7,.368,2.5,3.0,.833,3.4,5.4,1.0,0.2,1.5],
+     [65,23.5,10.5,3.9,8.5,.459,1.1,3.1,.355,1.6,2.0,.800,2.8,4.2,0.9,0.2,0.2],
+     [58,17.0,6.8,2.4,5.6,.429,0.8,2.4,.333,1.2,1.6,.750,2.0,2.8,0.7,0.1,-1.2],
+     [42,10.5,3.9,1.4,3.5,.400,0.5,1.6,.313,0.6,0.8,.750,1.3,1.6,0.4,0.1,-2.6],
+     [20,4.8,1.5,0.5,1.4,.357,0.2,0.7,.286,0.3,0.5,.600,0.6,0.7,0.2,0.0,-3.8]],
+ SG:[[72,35.2,27.5,9.5,20.0,.475,3.1,8.2,.378,5.4,6.3,.857,5.0,5.5,1.3,0.6,5.8],
+     [70,33.5,22.4,8.0,17.0,.471,2.6,7.0,.371,3.8,4.6,.826,4.5,3.8,1.1,0.5,3.2],
+     [68,29.5,15.8,5.6,12.4,.452,2.2,6.0,.367,2.4,2.9,.828,3.6,3.2,0.9,0.4,1.4],
+     [65,24.0,11.2,4.0,9.1,.440,1.6,4.5,.356,1.6,2.0,.800,3.0,2.2,0.8,0.3,0.1],
+     [58,18.0,7.3,2.6,6.1,.426,1.1,3.2,.344,1.0,1.3,.769,2.2,1.4,0.6,0.2,-1.4],
+     [42,11.0,4.1,1.5,3.7,.405,0.6,1.8,.333,0.5,0.7,.714,1.4,0.8,0.4,0.1,-2.8],
+     [20,5.0,1.6,0.6,1.6,.375,0.2,0.7,.286,0.2,0.4,.500,0.7,0.3,0.2,0.1,-4.0]],
+ SF:[[72,35.8,27.2,9.6,19.2,.500,2.5,6.6,.379,5.5,6.6,.833,7.8,6.2,1.3,0.9,6.5],
+     [70,33.8,21.8,7.7,16.2,.475,2.1,5.7,.368,4.3,5.2,.827,5.8,4.2,1.2,0.7,3.6],
+     [68,30.0,14.8,5.3,11.4,.465,1.8,4.9,.367,2.4,3.0,.800,4.8,2.6,1.0,0.6,1.6],
+     [65,24.5,10.4,3.8,8.4,.452,1.3,3.7,.351,1.5,2.0,.750,3.8,1.8,0.8,0.4,0.1],
+     [58,18.5,6.9,2.5,5.8,.431,0.9,2.6,.346,1.0,1.4,.714,2.8,1.2,0.6,0.3,-1.3],
+     [42,11.5,3.9,1.4,3.5,.400,0.5,1.5,.333,0.6,0.8,.750,1.8,0.7,0.4,0.2,-2.7],
+     [20,5.2,1.6,0.6,1.6,.375,0.2,0.7,.286,0.2,0.4,.500,0.8,0.3,0.2,0.1,-4.1]],
+ PF:[[72,35.0,27.8,10.2,18.8,.543,1.6,4.4,.364,5.8,7.5,.773,10.5,4.8,1.1,1.3,6.4],
+     [70,33.5,21.5,7.8,15.8,.494,1.7,4.7,.362,4.2,5.4,.778,8.2,3.5,0.9,1.1,3.6],
+     [68,30.0,15.0,5.5,11.2,.491,1.4,3.9,.359,2.6,3.4,.765,6.2,2.4,0.8,0.8,1.8],
+     [65,24.0,10.6,4.0,8.4,.476,1.0,2.9,.345,1.6,2.2,.727,4.8,1.6,0.7,0.6,0.2],
+     [58,18.0,7.0,2.6,5.7,.456,0.7,2.1,.333,1.1,1.5,.733,3.5,1.0,0.5,0.5,-1.2],
+     [42,11.0,4.0,1.5,3.4,.441,0.4,1.2,.333,0.6,0.9,.667,2.2,0.6,0.3,0.3,-2.6],
+     [20,5.0,1.6,0.6,1.5,.400,0.1,0.4,.250,0.3,0.5,.600,1.0,0.3,0.2,0.2,-4.0]],
+ C:[[72,34.8,28.5,10.4,18.2,.571,1.3,3.6,.361,6.4,7.8,.821,12.4,6.8,1.2,1.8,7.2],
+    [70,33.0,20.6,7.7,14.2,.542,1.1,3.1,.355,4.1,5.2,.788,9.8,3.8,0.9,1.6,3.8],
+    [68,28.5,14.2,5.7,9.8,.582,0.3,0.9,.333,2.5,3.6,.694,8.5,1.8,0.6,1.3,1.8],
+    [65,22.0,9.8,4.0,6.8,.588,0.2,0.6,.333,1.6,2.4,.667,6.2,1.2,0.5,1.0,0.2],
+    [58,16.0,6.2,2.5,4.5,.556,0.1,0.4,.250,1.1,1.7,.647,4.5,0.8,0.4,0.7,-1.0],
+    [42,9.5,3.5,1.4,2.6,.538,0.0,0.2,.000,0.7,1.2,.583,2.8,0.4,0.2,0.4,-2.5],
+    [20,4.5,1.4,0.5,1.0,.500,0.0,0.1,.000,0.4,0.8,.500,1.2,0.2,0.1,0.2,-3.8]]};
+const TBL_OF={PG:['PG'],SG:['SG'],CG:['PG','SG'],SF:['SF'],PF:['PF'],AF:['SF','PF'],
+  C:['C'],G:['PG','SG'],F:['SF','PF']};
+const TIER_CUT=[12,7,2,-2,-6,-10];
+/* 取某位置、某 d 值的基準數據列（相鄰等級線性插值） */
+function baseLine(pos,d){
+  const keys=TBL_OF[pos]||['ALL'];
+  const rows=keys.map(k=>STAT_TBL[k]||STAT_TBL.ALL);
+  let idx=6,frac=0;
+  for(let i=0;i<TIER_CUT.length;i++){
+    if(d>=TIER_CUT[i]){
+      idx=i;
+      const span=(i===0)?8:(TIER_CUT[i-1]-TIER_CUT[i]);
+      frac=(i===0)?0:clamp((d-TIER_CUT[i])/span,0,1);
+      break;}
+  }
+  const out=[];
+  for(let c=0;c<17;c++){
+    let v=0;
+    rows.forEach(Rw=>{const a=Rw[idx][c],b=(idx>0?Rw[idx-1][c]:Rw[0][c]);v+=a+(b-a)*frac;});
+    out.push(v/rows.length);
+  }
+  return out;
+}
+const LV={
+ HS_B:{n:'HBL 乙級',par:30,min:0,g:12,ama:1},
+ HS_A:{n:'HBL 甲級',par:36,min:30,g:18,ama:1},
+ UBA2:{n:'UBA 二級',par:40,min:34,g:12,ama:1},
+ UBA1:{n:'UBA 一級',par:44,min:38,g:16,ama:1,sal:12},
+ AMA:{n:'社會甲組',par:44,min:38,g:20,ama:1,sal:36},
+ TW_D:{n:'台灣職籃培訓',par:46,min:40,g:36,org:'TW',sal:60},
+ TW_1:{n:'台灣職籃一隊',par:50,min:44,g:36,org:'TW',top:'TW'},
+ CBA_Y:{n:'CBA 青年隊',par:52,min:46,g:40,org:'CBA',sal:400},
+ CBA_1:{n:'CBA 一隊',par:54,min:50,g:46,org:'CBA',top:'CBA'},
+ PREP:{n:'美國預校／JUCO',par:46,min:40,g:28,org:'US',sal:0},
+ NCAA2:{n:'NCAA D2',par:50,min:44,g:30,org:'US',sal:0},
+ NCAA1:{n:'NCAA D1',par:54,min:48,g:32,org:'US'},
+ GL:{n:'G League',par:56,min:50,g:50,org:'US',sal:200},
+ NBA:{n:'NBA',par:60,min:54,g:82,org:'US',top:'NBA'}
+};
+const PATHS={TW:['TW_D','TW_1'],CBA:['CBA_Y','CBA_1'],US:['PREP','NCAA2','NCAA1','GL','NBA']};
+const LGN={TW:'台灣職籃',CBA:'CBA',NBA:'NBA'};
+const TW_TEAMS=['新北君王','桃園靈猿','台北勇將','府城獵鷹','港都海神','中臺夢想'];
+const CBA_TEAMS=['遼東雄獅','南粵猛虎','天山飛鷹','錢江雙龍','申城巨鯊','京城鋼鐵','鵬城領航','齊魯高塔','珠江龍舟','琅琊雙星','江南鐵騎','長白猛虎','蜀道熊貓','晉城汾龍','津門金剛','閩海潮汐','京北衛戍','姑蘇大聖','甬江海豹','北疆農商'];
+const US_TEAMS=['洛城湖光','洛城疾艇','金州勇騎','波士頓綠盾','紐約衛騎','橋城網羅','費城自由','楓葉猛龍','釀城雄鹿','南灘熱浪','高原掘金','孤星獨行','烈日太陽','金河國王','北星森狼','平原雷霆','鹽湖爵韻','玫瑰開拓','太空城火箭','河畔馬刺','藍調灰熊','河口鵜鶘','桃城飛鷹','皇后黃蜂','風城公牛','湖畔騎士','汽車城活塞','賽道溜馬','魔幻奧蘭','首都巫師'];
+const NCAA_SCHOOLS=['杜克藍魔','肯塔基野貓','堪薩斯松鴉','龍蝦州立','西岸理工','大湖大學'];
+const UBA1_SCHOOLS=['健行科大','政治大學','輔仁大學','國立臺灣師範大學','義守大學','中國文化大學','臺北市立大學','國立體大'];
+const UBA2_SCHOOLS=['南華大學','中原大學','虎尾科大','嘉義大學'];
+const HS_T1=['能仁家商','南山高中','東山高中'];
+const HS_T2=['松山高中','泰山高中','光復高中','普門中學','三民家商'];
+const HS_T3=['新和高中','溪州工商','海線高中','山城高中'];
+const NAMES=['林祐廷','陳柏睿','張耕宇','高振翔','蘇彥丞','洪子睿','曾柏諺','鄭家澤'];
+
+const EVENTS=[
+ {n:'投籃機加練',for:'*',gt:'手感燙到不像自己的手',bt:'姿勢跑掉，出手變猶豫',g:{tre:2},b:{mid:-2}},
+ {n:'重量訓練增重',for:'B',gt:'卡位再也不會被推開',bt:'肌肉練僵了，起跳變鈍',g:{reb:2,sta:1},b:{jmp:-2}},
+ {n:'彈跳課表',for:'*',gt:'摸到框上緣了',bt:'膝蓋開始有聲音',g:{jmp:2},b:{knee:6,inj:8}},
+ {n:'運球體前變向千次',for:'G',gt:'手跟球黏在一起',bt:'手腕發炎，練過頭了',g:{hdl:2},b:{hdl:-1,inj:4}},
+ {n:'比賽錄影分析課',for:'*',gt:'看得懂對手的下一步了',bt:'想太多，反應變慢半拍',g:{iq:2,pas:1},b:{iq:-1}},
+ {n:'一對一單防加強',for:'*',gt:'橫移腳步跟上了',bt:'重心亂掉，一過就被穿',g:{def:2},b:{def:-2}},
+ {n:'罰球加練 500 顆',for:'*',gt:'閉著眼睛都能進',bt:'越練越僵，關鍵球開始怕',g:{mid:1,iq:1},b:{rand:-1}},
+ {n:'街頭鬥牛場',for:'*',gt:'野球場上的假動作真的有用',bt:'落地踩到人，腳踝翻了',g:{fin:2,exp:6},b:{inj:14}},
+ {n:'海外訓練營',for:'*',gt:'原來世界是這樣打球的',bt:'水土不服，整週練不動',g:{rand2:2,exp:8},b:{sta:-2}},
+ {n:'短影音爆紅',for:'*',gt:'那球過人被剪成千萬觀看',bt:'紅了，但心思跑到留言區',g:{exp:15,sta:1},b:{exp:15,rand:-2}},
+ {n:'學測與課業壓力',for:'HS',gt:'課本跟籃球都沒放掉',bt:'補習補到練球遲到',g:{iq:2},b:{sta:-1}},
+ {n:'教練戰術改造',for:'*',gt:'你看懂了自己在體系裡的價值',bt:'完全打不習慣新戰術',g:{iq:1,pas:2},b:{rand:-2}},
+ {n:'宿舍宵夜文化',for:'*',gt:'忍住了，體態維持得漂亮',bt:'體重上升，第一步變慢',g:{sta:1},b:{sta:-1,jmp:-2}},
+ {n:'跟洋將對練',for:'PRO',gt:'被撞了三十次，第三十一次站住了',bt:'硬碰硬，肩膀掛彩',g:{fin:2,def:1},b:{inj:12}},
+ {n:'球鞋代言試穿',for:'PRO',gt:'商演排得剛好，錢也賺了',bt:'行程太滿，訓練量掉了',g:{exp:10,sta:1},b:{rand:-2,sta:-1}},
+ {n:'季中低潮',for:'*',gt:'調整心態後，投籃手感回來了',bt:'手感消失了一個月',g:{iq:1,sta:1,tre:1},b:{tre:-2,sta:-1}},
+ {n:'抽高期的協調性',for:'HS',gt:'長高了，手腳也跟上了',bt:'長太快，手腳完全不聽話',g:{jmp:1,reb:2},b:{hdl:-2}},
+ {n:'學長／老將指點',for:'*',gt:'一句話點醒了你',bt:'學了不適合自己的招',g:{rand:2},b:{rand:-2}},
+ /* --- 以下為 v1.0 追加 --- */
+ {n:'低位單打特訓',for:'B',gt:'背框翻身跳投，怎麼守都沒用',bt:'重心太高，被抄了整整一週',g:{mid:2,fin:1},b:{mid:-2}},
+ {n:'後仰跳投研究',for:'*',gt:'學會用身體把防守者推開再出手',bt:'出手點跑掉，越投越沒信心',g:{mid:2},b:{mid:-1,iq:-1}},
+ {n:'防守腳步錄影檢討',for:'*',gt:'橫移不再落後半步',bt:'越想越僵，反而慢了',g:{def:2,iq:1},b:{def:-2}},
+ {n:'對位天王級球星',for:'PRO',gt:'被打爆之後，你把每一球都記下來了',bt:'從第一節就被打崩，信心碎滿地',g:{def:2,iq:1},b:{def:-1,rand:-1}},
+ {n:'睡眠與恢復科學',for:'*',gt:'睡飽之後，第四節腿還有力',bt:'作息越調越亂，整季都在補眠',g:{sta:2},b:{sta:-2}},
+ {n:'球隊心理諮商',for:'PRO',gt:'把壓力講出來之後，罰球線變安靜了',bt:'越談越焦慮，關鍵球開始想太多',g:{iq:2},b:{iq:-1,rand:-1}},
+ {n:'體重管理計畫',for:'*',gt:'減了三公斤，第一步快得嚇人',bt:'掉太多肌肉，禁區被推著走',g:{jmp:1,sta:1,fin:1},b:{reb:-2}},
+ {n:'加練左手',for:'G',gt:'左手上籃終於能看了，防守者不敢賭邊',bt:'兩隻手都變得不太會運球',g:{fin:2,hdl:1},b:{hdl:-2}},
+ {n:'球場外的官司',for:'PRO',gt:'律師處理得乾淨俐落，沒影響到球季',bt:'開庭、上新聞、被酸——整季心不在焉',g:{iq:1},b:{exp:10,rand:-2,sta:-1}},
+ {n:'回母校指導學弟',for:'PRO',gt:'講著講著，自己也想起當初為什麼打球',bt:'行程壓縮到訓練，回來手感全跑掉',g:{iq:1,exp:6},b:{rand:-1,sta:-1}},
+ {n:'季後賽經驗值',for:'PRO',gt:'高強度對抗打完，你整個人升級了',bt:'季後賽的節奏完全不適應',g:{iq:2,def:1},b:{iq:-1,sta:-1}},
+ {n:'換經紀公司',for:'PRO',gt:'新團隊把訓練與商演排得剛剛好',bt:'合約談判搞得一團亂，練球也分心',g:{exp:12,sta:1},b:{exp:-5,rand:-2}},
+ {n:'夏季聯訓營',for:'*',gt:'跟不同體系的人對練，視野打開了',bt:'練到過度疲勞，膝蓋開始抗議',g:{iq:1,pas:1,fin:1},b:{knee:5,sta:-1}},
+ {n:'三分線後撤步',for:'*',gt:'撤步三分成了你的殺招',bt:'重心不穩，出手全短',g:{tre:2,hdl:1},b:{tre:-2}},
+ {n:'健身房加碼',for:'*',gt:'對抗後還能穩住出手',bt:'練過頭，肌肉緊到跳不起來',g:{fin:1,reb:1,sta:1},b:{jmp:-2}}
+];
+const TN={scum:'渣男',confidante:'閨中密友',
+ genius:'天才',late:'大器晚成',clutch:'大心臟',iron:'鐵人',combo:'無巧不工',academy:'學院派',
+ grow2:'晚抽高',spring:'彈簧人',killer:'洋將殺手',asia:'亞洲外援之王',viral:'社群巨星',
+ hero:'國家隊之魂',loyal:'一隊一城',street:'體制外',small:'小校之光',grind:'努力仔',
+ phoenix:'浴火重生',legend:'歷史級球星',threeD:'3D 之神',
+ glass:'玻璃膝',yips:'罰球陰影',hog:'獨食者',cancer:'更衣室毒瘤',spot:'鎂光燈壓力'};
+const POSTAG={genius:1,late:1,clutch:1,iron:1,combo:1,academy:1,grow2:1,spring:1,killer:1,asia:1,viral:1,hero:1,loyal:1,street:1,small:1,grind:1,phoenix:1,legend:1,threeD:1,confidante:1};
+
+/* ============ 狀態 ============ */
+let S=null, stepQ=[];
+function newState(name,style){
+  const ab={}; AKEYS.forEach(k=>ab[k]=ri(20,30));
+  const g=GROUP[style]; for(const k in g.bias)ab[k]+=g.bias[k];
+  const pot={}, sh=shuffle(AKEYS.slice());
+  sh.forEach((k,i)=>{ pot[k]= i===0?ri(72,80) : i===1?ri(64,74) : i===2?ri(56,68) : ri(46,62); });
+  /* 成年身高依位置群抽（後衛矮、中鋒高），16 歲時還沒長完 */
+  const hgtMax=Math.round(clamp(g.hgt[0]+N0(g.hgt[1]),166,216));
+  const hgt=Math.max(158,hgtMax-ri(0,12));
+  return {name,style,group:style,age:16,year:2026,stage:'HS',stageYr:1,lv:'HS_A',ab,pot,carry:{},
+    hgt,hgtMax,exp:0,pool:0,salary:0,ct:null,org:null,team:'',teamYears:0,tally:{},
+    potSum0:Object.values(pot).reduce((a,b)=>a+b,0),
+    pos:style,role:null,tier:2,school:'',knee:0,kneeOp:0,bigInj:0,ironStreak:0,rehab:0,
+    switched:false,evolved:false,
+    seasonFactor:1,tmpInj:0,injNext:0,lastD:0,prevD:0,lastSt:null,pendStat:0,
+    six:0,cntSaveWin:0,cntBoldWin:0,cntBoldFail:0,samePick:0,samePickKey:null,
+    milDone:false,cbaYears:0,svc:0,faElig:false,champ:false,champTeam:null,intl:0,intlTop:0,
+    love:{st:'single',partner:null,kids:0,caught:0,affairs:0,exes:[],dyrs:0,datedTimes:0,risk:0,wait:0},
+    traits:{},removed:[],honors:[],stats:{},log:[],posYears:{},done:false,
+    endorse:0,skipMid:false,threeStreak:0};
+}
+/* 累積統計：例行賽(RS)／季後賽(PO)／分區冠軍賽(CF)／總冠軍賽(FN) 各一份 */
+function blank(){return {yr:0,GP:0,MIN:0,PTS:0,FGM:0,FGA:0,TPM:0,TPA:0,FTM:0,FTA:0,
+  REB:0,AST:0,STL:0,BLK:0,PM:0,DEF:0,AS:0};}
+const SPLITS=['RS','PO','CF','FN'];
+const SPLIT_N={RS:'例行賽',PO:'季後賽',CF:'分區冠軍賽',FN:'總冠軍賽'};
+function statBox(b,sp){
+  if(!S.stats[b])S.stats[b]={};
+  if(!S.stats[b][sp])S.stats[b][sp]=blank();
+  return S.stats[b][sp];
+}
+function rs(b){return (S.stats[b]&&S.stats[b].RS)||null;}
+function L(){return LV[S.lv];}
+function isAma(){return !!L().ama;}
+function bucket(){return L().top||null;}
+function teamsOf(org){return org==='TW'?TW_TEAMS:org==='CBA'?CBA_TEAMS:US_TEAMS;}
+
+/* ============ 評價 ============ */
+function scoreOf(){const a=S.ab;const arr=[a.mid,a.tre,a.fin].sort((x,y)=>y-x);
+  return arr[0]*0.5+arr[1]*0.3+a.hdl*0.2;}
+/* 第二技能：籃板或視野取高——讓內線型與組織型都有一條活路 */
+function secOf(){return Math.max(S.ab.reb,S.ab.pas);}
+function ovr(){const a=S.ab;
+  let v=scoreOf()*0.38+a.iq*0.12+a.def*0.16+secOf()*0.21+a.sta*0.13+(S.hgt-183)*0.13;
+  if(S.traits.yips)v-=3;
+  return Math.round(v);}
+function dOf(){const a=S.ab;return scoreOf()*0.45+a.iq*0.13+a.def*0.17+secOf()*0.25-L().par;}
+/* ============ 球員定位標籤（依能力＋當季數據判定）============ */
+const ROLE_TAGS=[
+ {k:'3D',n:'3D',d:'投得進三分、守得住對位',f:(a,B,st)=>a.tre>=B+3&&a.def>=B+3&&(st?st.MIN>=20:1)},
+ {k:'stretch',n:'空間型長人',d:'把對方護框中鋒拉出禁區',f:(a,B,st,pos)=>['PF','C','AF'].includes(pos)&&a.tre>=B+2},
+ {k:'rimrun',n:'跑吃型中鋒',d:'不投籃，靠體能與擋拆吃空接',f:(a,B,st,pos)=>['C','PF'].includes(pos)&&a.jmp>=B+4&&a.tre<B-2},
+ {k:'rimpro',n:'禁區守護者',d:'靠身高臂展把籃下封起來',f:(a,B,st,pos)=>['C','PF'].includes(pos)&&a.def>=B+3&&(st?st.BLK>=1.6:a.jmp>=B+2)},
+ {k:'ptfwd',n:'組織前鋒／中鋒',d:'掛名長人，實際是進攻發動機',f:(a,B,st,pos)=>['SF','PF','C','AF'].includes(pos)&&a.pas>=B+4&&(st?st.AST>=4:1)},
+ {k:'slash',n:'切入手',d:'第一步撕開防線直接進禁區',f:(a,B,st)=>a.fin>=B+5&&a.jmp>=B+2},
+ {k:'bucket',n:'單打手',d:'給他球就能自己解決',f:(a,B,st)=>Math.max(a.mid,a.fin)>=B+6&&(st?st.PTS>=18:1)},
+ {k:'glue',n:'團隊黏著劑',d:'髒活累活全包，數據不亮但少不了',f:(a,B,st)=>a.def>=B+2&&a.iq>=B+3&&(st?st.PTS<14&&st.PM>0:1)},
+ {k:'micro',n:'微波爐',d:'板凳上場不用熱身，立刻有火力',f:(a,B,st)=>st&&st.MIN<28&&st.PTS>=13},
+ {k:'closer',n:'關鍵先生',d:'最後兩分鐘的球交給你',f:(a,B,st)=>S.traits.clutch&&(st?st.PTS>=16:1)},
+ {k:'enforcer',n:'鐵血保鏢',d:'隊友被撞，第一個衝上去',f:(a,B,st,pos)=>['PF','C'].includes(pos)&&a.def>=B+2&&a.reb>=B+3},
+ {k:'vet',n:'休息室老將',d:'幾乎不上場，但沒他不行',f:(a,B,st)=>S.age>=34&&st&&st.MIN<12}
+];
+const MEME_TAGS=[
+ {k:'cone',n:'人形角錐',d:'防守像交通錐，一步就被過',f:(a,B,st)=>st&&st.MIN>=20&&a.def<=B-6},
+ {k:'cardio',n:'有氧運動員',d:'上場只是在球場上做有氧',f:(a,B,st)=>st&&st.MIN>=18&&st.PTS<4&&st.REB<2&&st.AST<1.2},
+ {k:'empty',n:'數據刷子',d:'分數很漂亮，球隊還是輸',f:(a,B,st)=>st&&st.PTS>=18&&st.PM<=-2},
+ {k:'terror',n:'籃球恐怖份子',d:'球權很大，決策災難',f:(a,B,st)=>st&&st.FGA>=14&&st.fg<0.42&&st.PM<=-1},
+ {k:'tweener',n:'定位尷尬',d:'身高卡在兩個位置之間',f:(a,B,st,pos)=>posFit(pos)<-4},
+ {k:'towel',n:'毛巾俠',d:'垃圾時間才上場',f:(a,B,st)=>st&&st.MIN<6&&st.GP>=20}
+];
+function evalTags(st){
+  const a=S.ab,B=L().par,pos=S.pos||S.group;
+  const good=ROLE_TAGS.filter(t=>{try{return t.f(a,B,st,pos);}catch(e){return false;}});
+  const meme=MEME_TAGS.filter(t=>{try{return t.f(a,B,st,pos);}catch(e){return false;}});
+  return {good,meme};
+}
+function tagSeason(st){
+  if(!bucket()||S.seasonFactor<=0)return;
+  const r=evalTags(st);
+  S.tagYears=S.tagYears||{};
+  if(r.good[0])S.tagYears[r.good[0].n]=(S.tagYears[r.good[0].n]||0)+1;
+  r.meme.forEach(m=>{S.tagYears[m.n]=(S.tagYears[m.n]||0)+1;});
+  S.curTags=r.good.slice(0,2).map(t=>t.n).concat(r.meme.map(t=>t.n));
+  if(r.good.length||r.meme.length){
+    card(r.meme.length&&!r.good.length?'bad':'info','球員定位',
+      r.good.slice(0,2).map(t=>'<span class="pill">'+t.n+'</span>').join('')
+      +r.meme.map(t=>'<span class="pill b">'+t.n+'</span>').join('')
+      +'<div class="statline">'+r.good.slice(0,2).concat(r.meme).map(t=>t.n+'：'+t.d).join('<br>')+'</div>');
+  }
+}
+function styleName(){const a=S.ab;
+  if(S.curTags&&S.curTags.length)return S.curTags[0];
+  if(S.traits.threeD)return '3D 悍將';
+  const c=[['射手',a.tre],['單打手',a.mid],['破框手',a.fin],['組織者',a.pas],['禁區柱石',a.reb],['鎖匠',a.def]];
+  c.sort((x,y)=>y[1]-x[1]);
+  if(c[0][1]<50)return '養成中';
+  if(c[0][1]-c[1][1]<=2)return '全能型';
+  return c[0][0];}
+function roleN(){return {A:'第一持球',B:'第二得分點',D:'3D 角色',R:'板凳輪替'}[S.role]||'—';}
+
+/* ---- 位置判定：身高把門（內線吃身高），能力決定分化與進化 ---- */
+function hgtBonus(p){
+  if(p==='PF'||p==='C'||p==='AF')return clamp((S.hgt-198)*0.5,-5,5);
+  if(p==='SF')return clamp((S.hgt-193)*0.3,-3,3);
+  return 0; /* 後衛不吃身高門檻 */
+}
+function posFit(p){
+  const B=L().par, a=S.ab, req=POS_REQ[p];
+  const adj=(S.age<=24?-5:S.age<=26?-2:0)-hgtBonus(p); /* 年輕紅利 ＋ 身高紅利 */
+  let worst=99;
+  for(const k in req){ worst=Math.min(worst,a[k]-(B+req[k]+adj)); }
+  return worst;
+}
+/* 群內位置：先看「你比較像哪一種球員」（比較式），再看門檻；
+   進化位置需先站上前置位置（控球→雙能衛、小前鋒→全能鋒線）。 */
+function subPos(){
+  const a=S.ab;
+  if(S.group==='C')return 'C';
+  if(S.group==='G'){
+    if((S.pos==='PG'||S.pos==='CG')&&posFit('CG')>=0)return 'CG';
+    const ball=a.hdl+a.pas, score=a.tre+a.fin;
+    return (ball>=score-2&&posFit('PG')>=0)?'PG':'SG';
+  }
+  if((S.pos==='SF'||S.pos==='AF')&&posFit('AF')>=0)return 'AF';
+  const inside=a.reb+a.jmp, outside=a.tre+a.def;
+  return (outside>=inside-2&&posFit('SF')>=0)?'SF':'PF';
+}
+/* 抽高抽出界時，開放一次跨群轉型（讓長高／沒長高都有出路） */
+function switchOffer(){
+  if(S.switched)return null;
+  if(S.group==='G'&&S.hgt>=197)return {to:'F',why:`你長到 ${S.hgt} 公分，後衛的身材已經藏不住了`};
+  if(S.group==='F'&&S.hgt>=207)return {to:'C',why:`${S.hgt} 公分的前鋒，教練想把你直接推進禁區`};
+  if(S.group==='F'&&S.hgt<=187)return {to:'G',why:`${S.hgt} 公分打前鋒太吃虧，控球訓練組要你過去`};
+  if(S.group==='C'&&S.hgt<=197)return {to:'F',why:`${S.hgt} 公分的中鋒撐不住高強度碰撞，得往外站`};
+  return null;
+}
+function posPath(){
+  const g=POSN[S.group]; if(S.pos===S.group)return g;
+  const pre=EVOLVE[S.pos];
+  return pre?`${g} › ${POSN[pre]} › ${POSN[S.pos]}`:`${g} › ${POSN[S.pos]}`;
+}
+function posReview(cont){
+  if(isAma()){ cont(); return; }   /* 學生時期只登錄到「後衛／前鋒／中鋒」 */
+  const sw=switchOffer();
+  const doPos=()=>{
+    if(!S.pos)S.pos=S.group;               /* 防呆：任何情況都至少停在位置群 */
+    const np=subPos(), old=S.pos;
+    if(old===S.group){ /* 首次分化 */
+      S.pos=np; S.posStubborn=false;
+      card('info','位置分化',`教練量完身高（<b class="hl">${S.hgt} 公分</b>）、看完錄影帶，把你從「${POSN[S.group]}」正式登錄為 <b class="hl">${POSN[np]}</b>。<div class="statline">薪資係數 ×${POS_SAL[np].toFixed(2)}｜洋將壓縮 ×${POS_IMP[np].toFixed(2)}</div>`);
+      cont(); return; }
+    if(np===old){ S.posStubborn=false; cont(); return; }
+    if(EVOLVE[np]){ /* 進化：雙能衛／全能鋒線 */
+      S.pos=np; S.evolved=true; S.posStubborn=false;
+      card('gold','位置進化：'+POSN[np],
+        np==='CG'?`你不只會傳球了——擋拆之後那顆三分，讓教練把球權整季交給你。從今以後你是 <b class="hl">雙能衛</b>，既組織也得分。<div class="statline">薪資係數 ×${POS_SAL.CG.toFixed(2)}（全隊最高）｜出賽分鐘 +2</div>`
+                 :`你既能拉到外面投三分，也能沉到禁區搶板——這種鋒線在哪個聯盟都缺。從今以後你是 <b class="hl">全能鋒線</b>。<div class="statline">薪資係數 ×${POS_SAL.AF.toFixed(2)}｜出賽分鐘 +2</div>`);
+      board(0); cont(); return; }
+    if(EVOLVE[old]){ /* 退化：從進化位置掉回前置位置 */
+      S.pos=np; card('bad','位置調整',`能力跟不上了——球團把你從 <b>${POSN[old]}</b> 調回 <b class="hl">${POSN[np]}</b>。`); cont(); return; }
+    /* 同群內橫向移防 */
+    choose(`位置會議：教練想把你從 ${POSN[old]} 移到 ${POSN[np]}`,[
+      {t:`接受移防 ${POSN[np]}`,main:true,s:`薪資係數 ×${POS_SAL[np].toFixed(2)}｜洋將壓縮 ×${POS_IMP[np].toFixed(2)}`,
+       f:()=>{S.pos=np;S.posStubborn=false;card('info','位置調整',`新球季改打 <b class="hl">${POSN[np]}</b>。`);cont();}},
+      {t:`堅持守 ${POSN[old]}`,warn:true,s:'守不住的位置：上場時間 −10%、守備分變負',
+       f:()=>{S.posStubborn=true;card('bad','位置調整',`你堅持留在 <b class="hl">${POSN[old]}</b>。教練沒說什麼，但錄影帶上的破口很明顯。`);cont();}}]);
+  };
+  if(sw){
+    choose(`位置會議：身高把你推到另一個位置群`,[
+      {t:`轉型為 ${POSN[sw.to]}`,main:true,s:`${sw.why}｜重新分化，養成方向改變`,
+       f:()=>{S.switched=true;S.group=sw.to;S.pos=sw.to;S.evolved=false;
+         card('gold','位置轉型',`${sw.why}——你正式改練 <b class="hl">${POSN[sw.to]}</b>。<div class="statline">${GROUP[sw.to].tree}</div>`);
+         board(0);doPos();}},
+      {t:`留在 ${POSN[S.group]} 群`,s:'維持原本的養成方向',f:()=>{S.switched=true;doPos();}}]);
+    return;
+  }
+  doPos();
+}
+function roleOf(){
+  const B=L().par,a=S.ab,sc=scoreOf();
+  if(sc>=B+6&&(a.hdl>=B+4||a.iq>=B+4))return 'A';
+  if(a.tre>=B+3&&a.def>=B+3)return 'D';
+  if(sc>=B+2)return 'B';
+  return 'R';
+}
+
+/* ============ 成長 ============ */
+function abCost(k){const cur=S.ab[k],pk=S.pot[k];let c=cur>=78?3:cur>=72?2:1;if(cur>=pk)c*=3;return c;}
+function addAb(k,v){
+  const o=S.ab[k]; S.lastOver=0;
+  if(v<0){S.ab[k]=clamp(o+v,1,80);return S.ab[k]-o;}
+  let cur=o,bud=v+(S.carry[k]||0);
+  while(bud>0&&cur<80){let c=cur>=78?3:cur>=72?2:1;if(cur>=S.pot[k])c*=3;
+    if(bud>=c){bud-=c;cur++;}else break;}
+  if(cur>=80)S.lastOver=bud;
+  S.carry[k]=cur>=80?0:bud; S.ab[k]=cur; return cur-o;
+}
+/* 事件卡／國際賽獎勵：碰到潛力天花板即轉成當季成績加成 */
+function addCap(k,v){
+  if(v<0)return addAb(k,v);
+  let cur=S.ab[k],bud=v,cr=(S.carry[k]||0),got=0;
+  if(cur>=S.pot[k]){S.pendStat+=bud;return 0;}
+  while(bud>0&&cur<S.pot[k]){let c=cur>=78?3:cur>=72?2:1;bud--;cr++;if(cr>=c){cr-=c;cur++;got++;}}
+  S.carry[k]=cr;S.ab[k]=cur;
+  if(bud>0)S.pendStat+=bud;
+  return got;
+}
+function injProb(){
+  /* 受傷率大幅調低：基礎 15% → 7%，年齡加成砍半 */
+  let p=7+S.injNext*0.6;
+  if(S.age>=33)p+=6;else if(S.age>=30)p+=3;
+  if(S.traits.academy&&S.age<25)p-=3;
+  if(S.traits.iron&&S.traits.glass)p=14;
+  else if(S.traits.iron)p=Math.min(p,5);
+  else if(S.traits.glass)p=Math.max(p,22);
+  return clamp(Math.round(p+S.tmpInj*0.6),2,70);
+}
+
+/* ============ 賽季模擬（以 NBA.xlsx 分級平均為基準）============ */
+function simLine(opts){
+  const o=opts||{}, lv=L(), B=lv.par, a=S.ab;
+  const d=(o.d!==undefined?o.d:dOf());
+  const pos=S.pos||S.group||'SF';
+  const L0=baseLine(pos,d);
+  const gp=o.games!==undefined?o.games:lv.g;
+  const st={d:d,form:0};
+  const staF=a.sta>=58?1.0:a.sta>=50?0.92+(a.sta-50)*0.01:Math.max(0.45,0.7+(a.sta-40)*0.022);
+  const imp=(S.org==='TW'&&S.pos)?Math.min(1,POS_IMP[S.pos]+(S.impBonus||0)):1;
+  const stub=S.posStubborn?0.9:1;
+  const evo=(S.pos==='CG'||S.pos==='AF')?1.06:1;
+  let mpg=L0[SC.MPG]*staF*imp*stub*evo*(0.96+R()*0.08);
+  if(S.lv==='CBA_1')mpg=Math.max(mpg,24);
+  mpg=clamp(mpg,3,41);
+  const gpRate=clamp(L0[SC.GP]/82,0.2,0.95);
+  st.GP=Math.max(1,Math.min(gp,Math.round(gp*gpRate*(o.f!==undefined?o.f:S.seasonFactor)*(0.95+R()*0.08))));
+  st.MIN=+mpg.toFixed(1);
+  const mScale=mpg/Math.max(6,L0[SC.MPG]);
+  const shotMul=clamp(1+(scoreOf()-B)*0.010,0.65,1.28);
+  st.FGA=+Math.max(0.4,L0[SC.FGA]*mScale*shotMul*(0.94+R()*0.12)).toFixed(1);
+  const tpaShare=clamp(L0[SC.TPA]/Math.max(1,L0[SC.FGA])*(1+(a.tre-B)*0.022),0.02,0.60);
+  st.TPA=+Math.max(0,st.FGA*tpaShare).toFixed(1);
+  st.tp=clamp(L0[SC.TPP]+(a.tre-B)*0.0035+N0(0.022),0.10,0.50);
+  st.TPM=+(st.TPA*st.tp).toFixed(1);
+  const twoA=Math.max(0,st.FGA-st.TPA);
+  /* 表上的 FG% 含三分，要先還原成兩分命中率，否則中鋒的 .588 會被當兩分命中率、整體飆到 70%+ */
+  const bTwoA=Math.max(0.1,L0[SC.FGA]-L0[SC.TPA]);
+  const bTwoM=Math.max(0.05,L0[SC.FGM]-L0[SC.TPM]);
+  const base2=clamp(bTwoM/bTwoA,0.30,0.68);
+  const two=clamp(base2+((Math.max(a.mid,a.fin)-B)*0.0026)+N0(0.016),0.28,0.70);
+  st.FGM=+(twoA*two+st.TPM).toFixed(1);
+  st.fg=st.FGA>0?st.FGM/st.FGA:0;
+  st.FTA=+Math.max(0,L0[SC.FTA]*mScale*(1+(a.fin-B)*0.018)*(0.9+R()*0.2)).toFixed(1);
+  st.ftp=clamp(L0[SC.FTP]+(a.mid-B)*0.0022+N0(0.03),0.35,0.95);
+  st.FTM=+(st.FTA*st.ftp).toFixed(1);
+  st.PTS=+((st.FGM-st.TPM)*2+st.TPM*3+st.FTM).toFixed(1);
+  st.REB=+Math.max(0.2,L0[SC.REB]*mScale*(1+(a.reb-B)*0.028)+N0(0.35)).toFixed(1);
+  st.AST=+Math.max(0.1,L0[SC.AST]*mScale*(1+(a.pas-B)*0.032)+N0(0.25)).toFixed(1);
+  st.STL=+Math.max(0.0,L0[SC.STL]*mScale*(1+(a.def-B)*0.030)+N0(0.12)).toFixed(1);
+  st.BLK=+Math.max(0.0,L0[SC.BLK]*mScale*(1+(a.jmp-B)*0.022+(S.hgt-198)*0.020)+N0(0.10)).toFixed(1);
+  st.PM=+(L0[SC.PM]+(o.tough?-1.5:0)+N0(1.2)).toFixed(1);
+  const dw=POS_DEFW[pos]||1;
+  st.DEF=Math.round(((a.def*0.6+a.reb*0.25+a.jmp*0.15)-B)*dw*0.55*(S.posStubborn?-0.6:1)*(st.GP/Math.max(1,gp)));
+  return st;
+}
+function applyForm(st){
+  const roll=R();
+  if(roll<0.10)st.form=-1; else if(S.seasonFactor>=0.9&&roll<0.20)st.form=1;
+  if(st.form){
+    const m=st.form>0?1.16:0.72;
+    ['PTS','FGM','FGA','TPM','TPA','FTM','FTA','REB','AST'].forEach(k=>st[k]=+(st[k]*m).toFixed(1));
+    st.tp=clamp(st.tp*(st.form>0?1.06:0.92),0.1,0.5);
+    st.fg=st.FGA>0?st.FGM/st.FGA:st.fg;
+    st.d+=st.form>0?4:-4;
+    st.PM=+(st.PM+(st.form>0?2:-2)).toFixed(1);
+  }
+  return st;
+}
+function simSeason(){
+  if(S.seasonFactor<=0)return Object.assign(blank(),{d:dOf(),form:0,MIN:0,tp:0,fg:0,ftp:0,PM:0});
+  const st=applyForm(simLine({}));
+  /* 溢出點數 → 當季手感（出手數同步增加，命中率才不會被灌爆） */
+  if(S.pendStat>0){const q=S.pendStat;S.pendStat=0;
+    st.FGA=+(st.FGA+q*0.30).toFixed(1);st.FGM=+(st.FGM+q*0.16).toFixed(1);
+    st.FTA=+(st.FTA+q*0.12).toFixed(1);st.FTM=+(st.FTM+q*0.10).toFixed(1);
+    st.fg=st.FGA>0?st.FGM/st.FGA:st.fg;
+    st.PTS=+((st.FGM-st.TPM)*2+st.TPM*3+st.FTM).toFixed(1);
+    st.REB=+(st.REB+q*0.15).toFixed(1);st.AST=+(st.AST+q*0.12).toFixed(1);st.d+=q*0.3;}
+  return st;
+}
+function accSplit(sp,st){
+  const b=bucket()||('_'+(S.org||'X'));
+  const t=statBox(b,sp);
+  if(sp==='RS')t.yr++;
+  t.GP+=st.GP;t.MIN+=st.MIN*st.GP;
+  ['PTS','FGM','FGA','TPM','TPA','FTM','FTA','REB','AST','STL','BLK'].forEach(k=>t[k]+=(st[k]||0)*st.GP);
+  t.PM+=(st.PM||0)*st.GP; t.DEF+=(st.DEF||0);
+}
+function accStat(st){
+  accSplit('RS',st);
+  if(S.pos)S.posYears[S.pos]=(S.posYears[S.pos]||0)+1;
+  if(bucket()&&S.team)S.tally[S.team]=(S.tally[S.team]||0)+1;
+}
+const pc1=v=>(v*100).toFixed(1);
+function statLine(st){
+  return `${st.GP} 場｜${st.MIN} 分｜<b class="hl">${st.PTS}</b> 分 ${st.REB} 板 ${st.AST} 助 ${st.STL} 抄 ${st.BLK} 阻`
+    +`<br>FG ${st.FGM}/${st.FGA} ${pc1(st.fg)}%｜3P ${st.TPM}/${st.TPA} ${pc1(st.tp)}%｜FT ${st.FTM}/${st.FTA} ${pc1(st.ftp)}%｜+/− ${st.PM>0?'+':''}${st.PM}`;
+}
+function salaryNow(){
+  const lv=S.lv,d=clamp(S.lastD||0,0,26);
+  let base=LV[lv].sal!==undefined?LV[lv].sal:0;
+  if(lv==='TW_1')base=150+d*45;
+  if(lv==='CBA_1')base=900+d*240;
+  if(lv==='NBA')base=3000+d*5000;
+  if(lv==='NCAA1')base=80+Math.min(d,10)*40;
+  let s=base*(S.ct?S.ct.mult:1)*(S.pos?POS_SAL[S.pos]:1);
+  if(S.seasonFactor===0)s*=0.5;
+  return Math.round(s);
+}
+
+/* ============ UI ============ */
+const $=id=>document.getElementById(id);
+let curBody=null;
+function card(cls,title,html){const d=document.createElement('div');d.className='card '+(cls||'');
+  d.innerHTML=(title?`<h4>${title}</h4>`:'')+html;(curBody||$('log')).appendChild(d);toBottom();}
+/* ---- 生涯里程碑：與「年度獎項」刻意做成兩種完全不同的通知 ----
+   里程碑＝你抵達了某個舞台（一輩子只會出現一次）；獎項＝這一季拿到什麼。 */
+const MILE={
+  TW_1:{t:'台灣職籃一隊',sub:'你成為職業球員了',
+    d:'第一次穿上有自己名字的球衣走進更衣室。看台上有人喊你的名字，你差點沒反應過來那是在叫你。'},
+  CBA_Y:{t:'CBA 青年隊',sub:'跨出台灣',
+    d:'語言不通、菜也不合，但球場是一樣的。你在異鄉的第一次練球，沒有人知道你是誰。'},
+  CBA_1:{t:'CBA 一隊',sub:'你是亞洲外援了',
+    d:'球團簽你不是來坐板凳的。萬人主場的噓聲與掌聲都對著你，這裡沒有適應期。'},
+  PREP:{t:'美國預校／JUCO',sub:'落地美國',
+    d:'行李還沒拆完就先被拉去打練習賽。第一次被蓋，你才知道這裡的體能是什麼等級。'},
+  NCAA1:{t:'NCAA D1',sub:'走進大學殿堂',
+    d:'兩萬人的球館、全國轉播、還有你聽不懂的加油口號。這裡每一個人都曾經是家鄉的第一名。'},
+  GL:{t:'G League',sub:'距離最近的一步',
+    d:'合約沒有保障、班機是紅眼、球館只有兩千人。但這裡的每一場，都有 NBA 的球探在看。'},
+  NBA:{t:'NBA',sub:'你站上了世界最高的舞台',
+    d:'球員通道很短，但你走了十幾年。名字被念出來的那一刻，主場燈光打在你身上——從高中球館的鐵皮屋頂，到這裡。'}
+};
+function checkMile(){
+  if(!S.reached)S.reached={};
+  const m=MILE[S.lv];
+  if(!m||S.reached[S.lv])return;
+  S.reached[S.lv]=true;
+  const big=(S.lv==='NBA');
+  const d=document.createElement('div');
+  d.className='card mile'+(big?' mile-top':'');
+  d.innerHTML=`<div class="mile-eb">生涯里程碑${big?' · 最高殿堂':''}</div>
+    <div class="mile-t">${m.t}</div>
+    <div class="mile-s">${m.sub}</div>
+    <div class="mile-d">${m.d}</div>
+    <div class="mile-f">${S.year} 年 · ${S.age} 歲 · ${S.team||LV[S.lv].n}${S.pos?'　'+POSN[S.pos]:''}</div>`;
+  (curBody||$('log')).appendChild(d);toBottom();
+  S.exp+=big?25:10;
+}
+function divider(t){const log=$('log');const bl=log.querySelectorAll('.yr-block');
+  if(bl.length>=2)bl[bl.length-2].classList.add('collapsed');
+  const b=document.createElement('div');b.className='yr-block';
+  const h=document.createElement('div');h.className='yr-head';h.textContent=t;
+  const bd=document.createElement('div');bd.className='yr-body';
+  h.onclick=()=>b.classList.toggle('collapsed');
+  b.appendChild(h);b.appendChild(bd);log.appendChild(b);curBody=bd;
+  const all=log.querySelectorAll('.yr-block');
+  if(all.length>9)all[0].remove();}
+/* 捲動目標＝「最新一張卡片的底部剛好落在操作區上方」，
+   而不是整份文件的最底（那樣會把版權footer推進可視帶，最新的大賽點數反而被記分板蓋住） */
+function toBottom(){
+  try{requestAnimationFrame(()=>{
+    const log=$('log'),act=$('act'),board=$('board');
+    const cards=log?log.querySelectorAll('.card'):null;
+    const last=cards&&cards.length?cards[cards.length-1]:null;
+    if(!last){window.scrollTo(0,document.body.scrollHeight);return;}
+    const actTop=act?act.getBoundingClientRect().top:window.innerHeight;
+    const bBot=board?board.getBoundingClientRect().bottom:0;
+    const r=last.getBoundingClientRect();
+    const gap=8;
+    if(r.bottom>actTop-gap)      window.scrollBy(0,r.bottom-(actTop-gap)); /* 卡片被面板蓋住 → 往下捲 */
+    else if(r.top<bBot+gap)      window.scrollBy(0,r.top-(bBot+gap));      /* 卡片被記分板蓋住 → 往上捲 */
+  });}catch(e){}
+}
+function board(phase){
+  $('bd-name').innerHTML=`${S.name}<small>${S.pos?POSN[S.pos]:'—'}${S.role?'·'+roleN():''}·${styleName()}${S.traits.genius?' ★':''}</small>`;
+  { const p=$('bd-path');
+    if(p){ const g=POSN[S.group]||'—', cur=S.pos||S.group, pre=EVOLVE[cur];
+      const steps=[[g,cur===S.group]];
+      if(cur!==S.group){ if(pre)steps.push([POSN[pre],false]); steps.push([POSN[cur],true]); }
+      else if(S.group!=='C'){ /* 還沒分化：把兩條路都列出來 */
+        steps.push([(GROUP_POS[S.group]||[]).filter(x=>!EVOLVE[x]).map(x=>POSN[x]).join('／'),false]); }
+      /* 只有站在進化前置位置（控球後衛／小前鋒）或還沒分化時，才顯示進化終點 */
+      const nextEvo=Object.keys(EVOLVE).find(e=>EVOLVE[e]===cur||(cur===S.group&&(GROUP_POS[S.group]||[]).includes(e)));
+      p.innerHTML=steps.map(([t,on])=>`<span class="${on?'on':''}">${t}</span>`).join('<i>›</i>')
+        +(nextEvo?`<i>›</i><span class="ghost">${POSN[nextEvo]}</span>`:''); } }
+  let t=(S.stage==='HS'||S.stage==='U')?`${S.school}（${stageLabel()}）`
+      :S.stage==='AMA'?`${S.school}（社會甲組）`
+      :(S.team||LV[S.lv].n);
+  $('bd-team').innerHTML=`${t}<br><span style="color:var(--dim);font-weight:400">${LV[S.lv].n}</span>`;
+  $('bd-age').textContent=S.age;$('bd-hgt').textContent=S.hgt;
+  $('bd-ovr').textContent=ovr();$('bd-exp').textContent=Math.round(S.exp);
+  $('bd-sal').textContent=fmtShort(S.salary);
+  [0,1,2].forEach(i=>$('lp'+i).classList.toggle('on',i===phase));
+  syncBoardH();
+}
+/* 記分板高度會隨位置路徑換行而變，寫進 CSS 變數讓底部操作區保留足夠空間 */
+function syncBoardH(force){
+  try{
+    /* 加點面板開著時凍結：記分板若因位置路徑換行而變高，會連帶改變面板高度、
+       把手指下的能力列往下推（實測 20px）。等面板關掉再更新。 */
+    const a=$('act');
+    if(!force&&a&&a.classList&&a.classList.contains('alloc'))return;
+    const h=$('board').offsetHeight;
+    if(h&&document.documentElement&&document.documentElement.style)
+      document.documentElement.style.setProperty('--boardH',h+'px');
+  }catch(e){}
+}
+function actClear(){const a=$('act');a.classList.remove('alloc');a.innerHTML='';a.scrollTop=0;syncBoardH(true);}
+function choose(title,opts){
+  actClear();const a=$('act');
+  if(title)a.innerHTML=`<div class="title">${title}</div>`;
+  opts.forEach(o=>{const b=document.createElement('button');
+    b.className='btn'+(o.main?' main':'')+(o.warn?' warn':'');
+    b.innerHTML=o.t+(o.s?`<small>${o.s}</small>`:'');
+    b.onclick=()=>{actClear();o.f();};a.appendChild(b);});
+  toBottom();
+}
+/* 「重點」能力＝現在這個位置需要的 ＋ 你還走得到的下一階需要的（隨位置改變而改變） */
+function keyAbilities(){
+  const s=new Set(['sta']);
+  const add=p=>{const q=POS_REQ[p];if(q)Object.keys(q).forEach(k=>s.add(k));};
+  const cur=S.pos||S.group;
+  if(cur!==S.group)add(cur);                                   /* 現在的位置 */
+  if(cur===S.group)(GROUP_POS[S.group]||[]).forEach(p=>{if(!EVOLVE[p])add(p);}); /* 未分化：兩條路都顧 */
+  Object.keys(EVOLVE).forEach(e=>{ if(EVOLVE[e]===cur)add(e); });/* 下一階進化 */
+  return s;
+}
+function keyNote(){
+  const cur=S.pos||S.group, nm=k=>ABL[k];
+  const list=[...keyAbilities()].map(nm).join('、');
+  let why;
+  if(cur===S.group)why=`還沒分化：<b>${POSN[S.group]}</b>群的兩條路都要顧`;
+  else if(Object.values(EVOLVE).includes(cur))why=`<b>${POSN[cur]}</b> ＋ 進化到 <b>${POSN[Object.keys(EVOLVE).find(e=>EVOLVE[e]===cur)]}</b> 所需`;
+  else why=`<b>${POSN[cur]}</b> 這個位置吃重的能力`;
+  return `<b class="hl">重點</b>＝${why}：${list}。<span style="opacity:.75">位置一變，重點就跟著變。</span>`;
+}
+function allocUI(mode,label,done){
+  actClear();const a=$('act');a.classList.add('alloc');
+  let dice=mode.dice?mode.dice.slice():null,pool=mode.pool||0,idx=0,hist=[];
+  const touched={};
+  const keyAbs=keyAbilities();
+  /* 面板刻意精簡：分化／進化規則與圖例都收在起始頁的說明彈窗裡，
+     這裡只留「骰子 → 重點一行 → 能力列 → 按鈕」，讓日誌的大賽點數卡片還看得到 */
+  a.innerHTML=`<div class="title">${label}</div><div id="al-top"></div>
+    <div class="al-note">${keyNote()}</div>
+    <div id="al-rows"></div><div id="al-btm"></div>`;
+  const top=$('al-top'),rows=$('al-rows'),btm=$('al-btm');
+  const left=()=>dice?dice.length-idx:pool;
+  const allCap=()=>AKEYS.every(k=>S.ab[k]>=80);
+  /* ---- 列只建立一次，之後只更新內容：避免每次點擊重繪造成畫面位移／點錯 ---- */
+  const els={};
+  const mk=(tag,cls,parent)=>{const e=document.createElement(tag);if(cls)e.className=cls;
+    if(parent)parent.appendChild(e);return e;};
+  AKEYS.forEach(k=>{
+    const r=document.createElement('div');
+    r.className='abrow'+(keyAbs.has(k)?' key':'');
+    r.setAttribute('role','button');
+    mk('span','nm',r).textContent=ABL[k];
+    const bar=mk('span','abar',r), fill=mk('i','',bar), cap=mk('em','',bar);
+    const val=mk('span','v',r);
+    const apply=()=>{
+      if(S.ab[k]>=80||left()<=0)return;
+      const keep=rows.scrollTop;          /* 保住捲動位置，手指下的那一列不會跑掉 */
+      const amt=dice?dice[idx]:1,pc=S.carry[k]||0;
+      const got=addAb(k,amt);touched[k]=(touched[k]||0)+amt;hist.push([k,got,pc]);
+      if(dice)idx++;else pool--;
+      update();board(0);
+      if(rows.scrollTop!==keep)rows.scrollTop=keep;};
+    r.onclick=apply;
+    /* 點擊不要讓這一列取得焦點：否則瀏覽器會把它捲進視野，畫面就會位移（鍵盤 Tab 仍可聚焦） */
+    r.onmousedown=e=>{if(e&&e.preventDefault)e.preventDefault();};
+    r.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();apply();}};
+    rows.appendChild(r);
+    els[k]={row:r,bar:fill,cap:cap,val:val};
+  });
+  /* ---- 兩顆按鈕固定佔位（確認在分配完前 disabled），高度不變就不會頂動畫面 ---- */
+  const undo=document.createElement('button');
+  undo.className='btn';undo.style.textAlign='center';undo.textContent='↩ 復原';
+  undo.onclick=()=>{ if(!hist.length)return;
+    const[k,got,pc]=hist.pop();S.ab[k]-=got;S.carry[k]=pc;
+    if(dice)idx--;else pool++;update();board(0);};
+  const ok=document.createElement('button');
+  ok.className='btn main';ok.style.textAlign='center';
+  ok.onclick=()=>{ if(left()>0&&!allCap())return;
+    actClear();allocDone(touched,!!dice);done();};
+  btm.appendChild(undo);btm.appendChild(ok);
+
+  function update(){
+    if(dice){
+      top.innerHTML='<div id="dice">'+dice.map((v,i)=>
+        `<div class="die ${i<idx?'used':''} ${i===idx?'active':''} ${v===6?'six':''}">${v}</div>`).join('')
+        +`<span class="dice-note">還有 <b class="hl">${left()}</b> 顆</span></div>`;
+    }else{
+      top.innerHTML=`<div class="pool">剩餘點數 ${pool}（點一下能力 +1）</div>`;
+    }
+    AKEYS.forEach(k=>{
+      const e=els[k],v=S.ab[k],pk=S.pot[k],capped=v>=80,cst=abCost(k),cr=S.carry[k]||0;
+      e.bar.style.width=(v/80*100)+'%';
+      e.cap.style.left=(pk/80*100)+'%';
+      /* 蓄力槽那行永遠佔位（成本 1 時隱形），列高才不會忽高忽低造成點擊位移 */
+      e.val.innerHTML=`${v}<small>/${pk}</small>`
+        +`<small class="cst" style="${cst>1?'':'visibility:hidden'}">${cr}/${cst}</small>`;
+      const on=!capped&&left()>0;
+      e.row.classList.toggle('capped',capped);
+      e.row.tabIndex=on?0:-1;
+      e.row.setAttribute('aria-disabled',on?'false':'true');
+      e.row.setAttribute('aria-label',`${ABL[k]}，目前 ${v}，潛力上限 ${pk}${keyAbs.has(k)?'，重點能力':''}`);
+    });
+    undo.disabled=!hist.length;
+    rows.classList.toggle('locked',left()<=0);  /* 分配完就別讓列看起來還能點 */
+    const done0=left()===0||allCap();
+    ok.disabled=!done0;
+    ok.textContent=done0?(left()>0?'能力已達上限，捨棄剩餘骰子 ▸':'確認 ▸'):`還有 ${left()} ${dice?'顆骰子':'點'}要分配`;
+  }
+  update();
+  toBottom();   /* 只在面板開啟時捲動一次，點擊時不再捲 */
+}
+function allocDone(touched,isDice){
+  const keys=Object.keys(touched);
+  if(isDice&&S.stage!=='HS'&&keys.length){
+    const tot=keys.reduce((s,k)=>s+touched[k],0);
+    let mk=keys[0];keys.forEach(k=>{if(touched[k]>touched[mk])mk=k;});
+    const foc=(touched[mk]/tot>=0.75)?mk:null;
+    if(foc&&foc===S.samePickKey)S.samePick++;
+    else if(foc){S.samePickKey=foc;S.samePick=1;}
+    else{S.samePickKey=null;S.samePick=0;}
+    if(S.samePick>=3&&!S.traits.combo)trait('combo','連續三年，你把所有汗水澆在同一個工具上——<b class="hl">季初擲骰永久多 1 顆</b>。');
+  }
+  const gain=keys.reduce((s,k)=>s+touched[k],0);
+  if(!S.traits.late&&!S.traits.genius&&ovr()<50&&S.age>=25&&S.age<32&&isDice&&gain>=16){
+    S.traits.late=true;boost2();
+    card('gold','隱藏素質解鎖：大器晚成','別人都以為你到頂了，你卻在這一年脫胎換骨——<b class="hl">每顆訓練骰永久保底 3 點</b>，事件卡好結果提升到 70%。');
+  }
+}
+function trait(k,desc,bad){S.traits[k]=true;card(bad?'bad':'gold','隱藏素質解鎖：'+TN[k],desc);board(1);}
+function untrait(k){if(S.traits[k]){S.traits[k]=false;if(!S.removed.includes(TN[k]))S.removed.push(TN[k]);}}
+function boost2(){
+  const c=shuffle(AKEYS.filter(k=>S.ab[k]<70)).slice(0,2),out=[];
+  c.forEach(k=>{S.pot[k]=Math.min(80,S.pot[k]+10);S.ab[k]=clamp(S.ab[k]+5,1,80);
+    out.push(`${ABL[k]} <b class="up">+5</b>（上限 +10 → ${S.pot[k]}）`);});
+  if(out.length)card('gold','潛能重新評估',out.join('、')+'。');
+}
+
+/* ============ 年度流程 ============ */
+function nextStep(){if(S.done){stepQ=[];return;}const f=stepQ.shift();if(f)f();}
+function stageLabel(){
+  if(S.stage==='HS')return '高'+(['一','二','三'][S.stageYr-1]||S.stageYr);
+  if(S.stage==='U')return '大'+(['一','二','三','四'][S.stageYr-1]||S.stageYr);
+  return LV[S.lv].n;
+}
+function startYear(){stepQ=[phasePre,phaseMid,phaseEnd];
+  divider(`${S.year} 年 · ${S.age} 歲 · ${stageLabel()}`);nextStep();}
+function advance(){S.age++;S.year++;S.stageYr++;startYear();}
+
+function phasePre(){
+  board(0);S.tmpInj=0;S.seasonFactor=1;S.skipMid=false;S.prevD=S.lastD;S.lastD=0;
+  if(S.age>=40){endGame('身體到極限了，'+S.year+' 年宣布引退。');return;}
+  /* 抽高 */
+  if(S.stage==='HS'&&S.hgt<S.hgtMax){
+    const g=Math.min(S.hgtMax-S.hgt,ri(1,5));
+    if(g>0){S.hgt+=g;card('good','抽高',`回學校量身高，護士小姐愣了一下——<b class="hl">長高 ${g} 公分（${S.hgt} 公分）</b>。`);}
+  }
+  if((S.age===19||S.age===20)&&!S.traits.grow2&&chance(5)){
+    const g=ri(3,8);S.hgtMax+=g;S.hgt+=g;S.traits.grow2=true;
+    S.pot.reb=Math.min(80,S.pot.reb+8);S.pot.jmp=Math.min(80,S.pot.jmp+8);S.exp+=10;
+    card('gold','隱藏素質解鎖：晚抽高',`體檢報告上的數字讓所有人重看一次——你居然還在長。<b class="hl">身高 +${g} 公分（${S.hgt}）</b>，籃板與彈跳潛力 +8。`);
+  }
+  /* 衰退 */
+  const dAge=S.age-(S.traits.disc?2:0);
+  if(dAge>=30){
+    const dec=dAge>=33?4+(dAge-33):2;
+    AKEYS.forEach(k=>{
+      let x=dec;
+      if(k==='jmp'||k==='sta')x+=1;
+      if(k==='tre'||k==='iq')x=Math.ceil(dec/2);
+      if(S.traits.threeD&&dAge<36)x=Math.max(0,x-2);
+      S.ab[k]=clamp(S.ab[k]-x,1,80);});
+    card('bad','歲月不饒人',`${dAge>=33?'第二階段':'第一階段'}衰退：全能力 <b class="dn">−${dec}</b>（彈跳／體能再多 1，三分與 IQ 只扣一半${S.traits.threeD?'，3D 之神再減 2':''}）。`);
+    board(0);
+  }
+  if(S.rehab>0){S.rehab--;S.skipMid=true;S.seasonFactor=0;
+    card('bad','復健年','大傷未癒，本季<b class="dn">全年報銷</b>，只能在治療室度過（擲骰減為 2 顆）。');
+    S.log.push({y:S.year,age:S.age,tm:S.team||S.school||LV[S.lv].n,line:'復健年・全年報銷',inj:true});}
+  else if(S.milYear){S.milYear=false;S.skipMid=true;S.seasonFactor=0;
+    card('info','國訓隊的一年','左營的日子只有訓練與比賽，聯盟球季與你無關。<b class="hl">但你練成了另一台機器。</b>');
+    S.log.push({y:S.year,age:S.age,tm:'國訓隊',line:'服役・未打聯盟',inj:false});}
+
+  const roll=()=>{
+    let n=S.skipMid?2:(()=>{const r=R();return r<0.22?3:r<0.62?4:r<0.90?5:6;})();
+    if(S.traits.combo&&!S.skipMid)n++;
+    if(S.traits.spot)n=Math.max(2,n-1);
+    if(S.traits.academy&&!S.skipMid&&chance(35))n++;
+    const dice=[];let six=0;
+    for(let i=0;i<n;i++){const v=S.traits.genius?ri(4,6):S.traits.late?ri(3,6):ri(1,6);
+      dice.push(v);if(v===6&&S.age<22&&!S.traits.genius){S.six++;six++;}}
+    let msg=`自主訓練擲出 <b class="hl">${n}</b> 顆骰。`;
+    if(six&&!S.traits.genius)msg+=` 高標值「6」累計 <b class="hl">${S.six}/5</b> 次。`;
+    card('','季初特訓',msg);
+    if(S.six>=5&&!S.traits.genius&&S.age<22){S.traits.genius=true;
+      card('gold','隱藏素質解鎖：天才','22 歲前五度擲出高標值——從今以後每顆訓練骰<b class="hl">永久保底 4 點</b>，事件卡好結果提升到 <b class="hl">70%</b>。');
+      boost2();}
+    choose('',[{t:`▸ 分配訓練成果（${dice.length} 顆骰）`,main:true,
+      f:()=>posReview(()=>allocUI({dice},'分配訓練成果（點骰套用｜72／78 以上成長變貴）',()=>nextStep()))}]);
+  };
+  /* 職業：出賽強度規劃 */
+  if(!isAma()&&!S.skipMid){
+    const r=S.knee/kneeCap();
+    const feel=r>=0.85?'膝蓋每天都在提醒你':r>=0.6?'蹲下起立會卡一下':r>=0.35?'還算正常':'身體很輕';
+    const inner=roll;
+    choose(`開季出賽規劃（膝蓋狀況：${feel}）`,[
+      {t:'全力打',warn:true,s:'成績最佳（d+1）｜膝蓋負荷 ×1.25',f:()=>{S.effort=1;inner();}},
+      {t:'正常打',main:true,s:'標準強度',f:()=>{S.effort=0;inner();}},
+      {t:'控管上場時間',s:'成績保守（d−1）｜負荷 ×0.65',f:()=>{S.effort=-1;inner();}}]);
+    return;
+  }
+  /* 大二～大四季前：可提前投選秀 */
+  if(S.stage==='U'&&S.stageYr>=2){
+    const o=ovr(),opts=[
+      {t:'留在校隊繼續磨練',main:true,f:roll},
+      {t:'提前投入台灣職籃選秀',s:`綜合 ${o}｜曝光 ${Math.round(S.exp)}｜放棄剩餘學生資格`,f:()=>runDraft(true,roll)}];
+    if(o>=44&&chance(60))opts.push({t:'休學赴 CBA 青年隊',s:'高薪，但要在陌生城市從頭證明',
+      f:()=>{S.stage='PRO';signTo('CBA','CBA_Y',null,ri(2,3),1);roll();}});
+    if(o>=46)opts.push({t:'休學赴美（預校／JUCO）',s:'走五級階梯挑戰 NBA',
+      f:()=>{S.stage='PRO';signTo('US',o>=50?'NCAA2':'PREP',null,3,1);roll();}});
+    choose(`大${['一','二','三','四'][S.stageYr-1]}季前 · 十字路口`,opts);
+    return;
+  }
+  if(!isAma()&&S.age>=34){
+    const opts=[{t:'再戰一年',main:true,f:roll}];
+    if(S.org!=='TW'&&ovr()>=LV.TW_1.min)opts.push({t:'放棄合約，返台加盟',s:'重披台灣職籃球衣',
+      f:()=>{signTo('TW','TW_1');roll();}});
+    opts.push({t:'召開引退記者會',warn:true,f:()=>endGame('功成身退，'+S.year+' 年宣布引退。')});
+    choose('身體大不如前了',opts);
+    return;
+  }
+  roll();
+}
+
+/* ============ 感情事件 ============
+   20 歲起、職業階段每年有機率觸發。單身→緋聞官宣；交往→求婚／分手／劈腿；
+   已婚→生子／外遇。外遇被抓兩次＝渣男（往後每次被抓全能力 −4）。 */
+const CHEER=['林芷妍','陳語柔','張以恩','王品анна','許安琪','蘇宜家','周妍希','郭亭亭'];
+const CHEER_OK=CHEER.map(n=>n.replace(/[^一-鿿]/g,''));
+function loveCard(t,h,cls){card(cls||'info','場外｜'+t,h);board(1);}
+function abHit(n,note){
+  const ks=shuffle(AKEYS.slice()).slice(0,2),out=[];
+  ks.forEach(k=>{const g=addAb(k,-n);out.push(`${ABL[k]} <span class="dn">${g}</span>`);});
+  return (note?note+'<br>':'')+out.join('｜');
+}
+function loveEvent(next){
+  const L=S.love;
+  if(isAma()||S.age<20||S.seasonFactor<=0){next();return;}
+  /* ---- 交往中：每年必定走一輪 ---- */
+  if(L.st==='dating'){
+    L.dyrs++;
+    const r=R();
+    if(L.dyrs>=2&&r<0.30){   /* 求婚契機 */
+      choose(`場外：${L.partner} 看著別人的婚禮影片看了很久`,[
+        {t:'就是現在——求婚',main:true,s:'固定加成：體能提升、本季受傷率下降',
+         f:()=>{L.st='married';L.dyrs=0;S.injNext=Math.max(0,S.injNext-4);
+           const g=addAb('sta',1);
+           loveCard('求婚成功',`主場中圈，燈全暗下來，只留一支追光。<b class="hl">${L.partner}</b> 摀著嘴點頭的畫面隔天上了所有體育版。<br>體能 <span class="up">+${g||1}</span>，本季受傷率下降。`,'gold');
+           next();}},
+        {t:'再等等吧，先拚球季',s:'她沒說什麼，但交往越久分手風險越高',
+         f:()=>{L.wait=(L.wait||0)+1;loveCard('再等等','「我知道你現在很忙。」她笑了一下，把手機收起來。');next();}}]);
+      return;}
+    if(r<0.30+0.22){          /* 劈腿誘惑 */
+      choose('場外：聚餐散場，有人說順路想搭你的車',[
+        {t:'讓她上車（賭一把）',warn:true,s:'沒被抓＝體能提升｜被抓＝能力下滑、分手風險大增',
+         f:()=>{L.affairs++;
+           if(chance(55)){const g=addAb('sta',1);loveCard('沒有下文',`車停在巷口，什麼都沒發生。你鬆了一口氣。<br>體能 <span class="up">+${g||1}</span>。`);}
+           else{L.caught++;L.risk=(L.risk||0)+30;
+             loveCard('被拍到了',abHit(3,'狗仔的鏡頭從對街拍得清清楚楚，隔天登上娛樂版頭條。'),'bad');
+             if(L.caught>=2&&!S.traits.scum){S.traits.scum=true;
+               card('bad','隱藏素質解鎖：渣男','第二次被抓，形象徹底崩了——<b class="dn">往後每次被抓，全能力 −4</b>。');}
+             else if(S.traits.scum){AKEYS.forEach(k=>addAb(k,-4));card('bad','代價','渣男標籤生效，全能力再 <b class="dn">−4</b>。');}}
+           next();}},
+        {t:`「不順路。」直接載 ${L.partner} 回家`,main:true,s:'感情穩固，絕對不虧',
+         f:()=>{const g=addAb('sta',1);loveCard('回家',`你把車開往另一個方向。<b class="hl">${L.partner}</b> 在副駕睡著了。<br>體能 <span class="up">+${g||1}</span>。`);next();}}]);
+      return;}
+    /* 分手判定 */
+    const risk=clamp((L.dyrs>=4?(L.dyrs-3)*12:0)+(L.wait||0)*8+(L.risk||0),0,70);
+    if(chance(risk)){
+      L.exes.push({name:L.partner,kids:0});L.st='single';L.risk=0;L.wait=0;
+      loveCard('分手',abHit(3,`「我等不到了。」<b>${L.partner}</b> 把鑰匙留在桌上。`),'bad');
+      if(L.exes.length>=3&&!L.kids&&!S.traits.confidante){S.traits.confidante=true;
+        card('gold','隱藏稱號：閨中密友','第三段感情，還是走到同樣的結局。「我愛上了你，你卻只把我當好姊妹。」');}
+      next();return;}
+    const g=addAb('sta',1);
+    loveCard('放閃',`明星賽的鏡頭掃到看台，<b class="hl">${L.partner}</b> 舉著你的號碼。熱搜掛了一晚。<br>體能 <span class="up">+${g||1}</span>，曝光度 <span class="up">+4</span>。`);
+    S.exp+=4;next();return;
+  }
+  /* ---- 已婚 ---- */
+  if(L.st==='married'){
+    if(!chance(L.kids?30:40)){next();return;}
+    const r=R();
+    if(r<0.45){               /* 外遇誘惑 */
+      choose('場外：客場飯店，手機亮起「睡了嗎？」',[
+        {t:'赴約（賭一把）',warn:true,s:'沒被抓＝體能提升｜被抓＝能力下滑、婚姻危機',
+         f:()=>{L.affairs++;
+           if(chance(55)){const g=addAb('sta',1);loveCard('沒有下文','你在電梯口停住，最後轉身回房間。<br>體能 <span class="up">+'+(g||1)+'</span>。');next();}
+           else{L.caught++;
+             loveCard('頭版醜聞',abHit(3,'照片隔天出現在頭版。老婆的訊息只有兩個字：「回家。」'),'bad');
+             if(L.caught>=2&&!S.traits.scum){S.traits.scum=true;
+               card('bad','隱藏素質解鎖：渣男','第二次被抓——<b class="dn">往後每次被抓，全能力 −4</b>。');}
+             else if(S.traits.scum)AKEYS.forEach(k=>addAb(k,-4));
+             choose('她把離婚協議書放在桌上',[
+               {t:'跪著道歉，求她再給一次機會',main:true,s:'成功保住婚姻｜失敗＝再扣能力並離婚',
+                f:()=>{ if(chance(40)){loveCard('挽回','她把筆放下，說最後一次。');next();}
+                  else{L.exes.push({name:L.partner,kids:L.kids});L.st='divorced';L.kids=0;
+                    loveCard('離婚',abHit(2,'簽完字那天，她一句話都沒說。'),'bad');next();} }},
+               {t:'簽字',warn:true,f:()=>{L.exes.push({name:L.partner,kids:L.kids});L.st='divorced';L.kids=0;
+                 loveCard('離婚','你把筆放下。房子留給她，你搬進球館旁的公寓。','bad');next();}}]);
+           }}},
+        {t:'回訊息：「陪小孩讀完故事書了，晚安」',main:true,s:'家庭和睦，絕對不虧',
+         f:()=>{const g=addAb('sta',1);loveCard('回家','你把手機關靜音。<br>體能 <span class="up">+'+(g||1)+'</span>。');next();}}]);
+      return;}
+    if(r<0.75&&L.kids<4){     /* 生子 */
+      const p=[65,45,30,20][L.kids]||15;
+      if(chance(p)){L.kids++;S.pool+=2;
+        loveCard('孩子出生',`產房外你還穿著球衣。<b class="hl">第 ${L.kids} 個孩子</b>出生了——你在記者會上說：「我想讓他以後看得到我打球。」<br>獲得 <b class="hl">2 點能力點</b>。`,'gold');
+        next();return;}
+    }
+    const g=addAb('sta',1);
+    loveCard('家庭日',`休賽季你帶全家回球館，隔著護網教孩子怎麼投籃。照片被球團官方轉發。<br>體能 <span class="up">+${g||1}</span>。`);
+    next();return;
+  }
+  /* ---- 單身／離婚：緋聞官宣 ---- */
+  if(!chance(40)){next();return;}
+  const p=pick(CHEER_OK);
+  choose(`場外：你和啦啦隊 ${p} 被拍到球場外同框，記者把麥克風遞過來`,[
+    {t:'大方承認：「請大家祝福我們」',main:true,s:'官宣＝曝光度大增｜但要看她那邊敢不敢認',
+     f:()=>{ S.exp+=12;
+       if(chance(65)){L.st='dating';L.partner=p;L.dyrs=0;L.datedTimes=(L.datedTimes||0)+1;L.risk=0;L.wait=0;
+         const g=addAb('sta',1);
+         loveCard('戀情公開',`<b class="hl">${p}</b> 在社群發了十指緊扣的照片：「謝謝大家的祝福。」<br>曝光度 <span class="up">+12</span>、體能 <span class="up">+${g||1}</span>。`,'gold');}
+       else{loveCard('單方面承認',`她隔天透過經紀公司否認：「只是普通朋友。」據說啦啦隊有禁愛令。<br>曝光度 <span class="up">+12</span>，但你一個人站在風裡。`,'bad');}
+       next();}},
+    {t:'笑而不答，快步走過',s:'不承認就沒有下文，專心打球',
+     f:()=>{loveCard('未完待續','緋聞燒了三天就退燒。也許時機還沒到。');next();}}]);
+}
+function phaseMid(){
+  board(1);
+  if(S.skipMid){S.ironStreak=0;nextStep();return;}
+  const n=isAma()?2:3;
+  loveEvent(()=>drawEvents(n,()=>{
+    choose('',[{t:'▸ 季中健康檢查',main:true,f:()=>{rollInjury();
+      choose('',[{t:'▸ 查看球季表現',main:true,f:()=>{isAma()?amaSeason():proSeason();}}]);}}]);
+  }));
+}
+function drawEvents(n,done){
+  if(n<=0){done();return;}
+  choose('',[{t:`抽事件卡（剩 ${n} 張）`,main:true,f:()=>{
+    const pool=EVENTS.filter(e=>e.for==='*'||(e.for==='HS'&&S.stage==='HS')||(e.for==='PRO'&&!isAma())
+      ||(e.for==='G'&&['PG','SG'].includes(S.pos||(S.hgt<195?'PG':'PF')))
+      ||(e.for==='B'&&['PF','C'].includes(S.pos||(S.hgt>=195?'PF':'PG'))));
+    const ev=pick(pool.length?pool:EVENTS.filter(e=>e.for==='*'));
+    const base=(S.traits.genius||S.traits.late||S.traits.clutch)?70:50;
+    const boldPen=S.traits.clutch?0:15;
+    const after=()=>{board(1);drawEvents(n-1,done);};
+    choose(`事件｜${ev.n} — 怎麼應對？`,[
+      {t:'全力一搏',warn:true,s:`成功率 ${base-boldPen}%｜成功 +${S.traits.clutch?4:3}／失敗 −${S.traits.clutch?1:2}`,f:()=>resolve(ev,'bold',base,boldPen,after)},
+      {t:'照常執行',main:true,s:`成功率 ${base}%｜幅度 ±2`,f:()=>resolve(ev,'norm',base,boldPen,after)},
+      {t:'保守應對',s:`成功率 ${Math.min(95,base+20)}%｜幅度 ±1`,f:()=>resolve(ev,'safe',base,boldPen,after)}]);
+  }}]);
+}
+function resolve(ev,mode,base,boldPen,done){
+  let good,mag=mode==='safe'?1:mode==='bold'?3:2;
+  if(mode==='safe'){good=chance(Math.min(95,base+20));if(good)S.cntSaveWin++;}
+  else if(mode==='bold'){good=chance(base-boldPen);
+    /* 上檔 +3／下檔 −2（大心臟 +4／−1）：讓風險路線的期望值不輸保守，但變異更大 */
+    if(good){S.cntBoldWin++;mag=S.traits.clutch?4:3;}else{S.cntBoldFail++;mag=S.traits.clutch?1:2;}}
+  else good=chance(base);
+  const fx=good?ev.g:ev.b,out=[];
+  for(const k in fx){
+    const val=fx[k],dir=val>0?1:-1,amt=dir*mag;
+    if(k==='inj'){const v={1:8,2:12,3:16,4:12}[mag]||12;S.tmpInj+=v;out.push(`本季受傷率 <span class="dn">+${v}%</span>`);}
+    else if(k==='knee'){S.knee+=mag*2;out.push(`膝蓋負荷 <span class="dn">+${mag*2}</span>`);}
+    else if(k==='exp'){const v=Math.round(val*(mag/2));S.exp+=v;out.push(`曝光度 <span class="up">+${v}</span>`);}
+    else if(k==='rand'||k==='rand2'){
+      const ks=shuffle(AKEYS.slice()).slice(0,k==='rand2'?2:1);
+      ks.forEach(kk=>{const g=dir>0?addCap(kk,amt):addAb(kk,amt);
+        out.push(`${ABL[kk]} <span class="${dir>0?'up':'dn'}">${dir>0?'+'+g:g}</span>`);});}
+    else if(k in S.ab){
+      const g=dir>0?addCap(k,amt):addAb(k,amt);
+      if(dir>0&&g===0&&S.pendStat>0)out.push('<span class="up">手感火燙（本季成績加成）</span>');
+      else out.push(`${ABL[k]} <span class="${dir>0?'up':'dn'}">${dir>0?'+'+g:g}</span>`);}
+  }
+  card(good?'good':'bad','事件卡｜'+ev.n,
+    `${good?ev.gt:ev.bt}。${mode==='bold'?(good?'<b class="hl">豪賭成功！</b>':'<b class="dn">豪賭失敗……</b>'):''}<br>${out.join('｜')||'（有進步，但不足以升級）'}`);
+  checkTraits();done();
+}
+function checkTraits(){
+  if(!S.traits.clutch&&S.age<25&&S.cntBoldWin>=7)
+    trait('clutch','無數次的豪賭把你的心臟練成鐵的——<b class="hl">全力一搏不再有懲罰、成功加成 +4、失敗只 −2</b>，冠軍率 ×1.25。');
+  if(!S.traits.disc&&S.age<25&&S.cntSaveWin>=15){S.traits.disc=true;
+    card('gold','隱藏素質解鎖：自律狂','沒有派對、沒有捷徑，只有重訓室的鐵片聲——<b class="hl">整條衰退曲線延後兩年</b>。');}
+  if(!S.traits.viral&&S.exp>=320)
+    trait('viral','你的每一球都在社群上有人剪——<b class="hl">代言收入 ×2.5、明星賽保底入選</b>，但事件卡失敗率 +5%。');
+  if(!S.traits.spot&&S.exp>70&&S.cntBoldFail>=2&&S.age<24)
+    trait('spot','鎂光燈打得太久，你開始在意每一句留言——<b class="dn">季初擲骰 −1 顆</b>。',1);
+  if(!S.traits.cancer&&S.cntBoldFail>=14&&!S.traits.loyal&&!S.traits.clutch)
+    trait('cancer','教練受夠了你的不可控——<b class="dn">續約條件惡化</b>。',1);
+}
+
+/* ---- 傷病 ---- */
+function rollInjury(){
+  const p=injProb();
+  if(!chance(p)){card('info','健康回報',`本季平安出賽。（受傷機率 ${p}%）`);S.injNext=0;return;}
+  S.injNext=0;
+  if(chance(64)){
+    const cut=ri(20,45);S.seasonFactor=1-cut/100;S.ironStreak=0;
+    let ex='';
+    if(chance(40)){const k=pick(AKEYS),amt=ri(1,2);S.ab[k]=clamp(S.ab[k]-amt,1,80);
+      ex=`傷勢留下後遺症：<b class="dn">${ABL[k]} −${amt}</b>。`;}
+    card('bad','小傷',`腳踝翻船進了傷兵名單，本季出賽量減少 <b class="dn">${cut}%</b>。${ex}`);
+  }else{
+    const played=ri(5,45);S.seasonFactor=played/100;S.bigInj++;S.ironStreak=0;
+    let txt=`重大傷勢——進手術室了。<b class="dn">賽季提前報銷</b>（留下 ${played}% 的出賽紀錄）。`;
+    if(chance(20)){S.rehab=1;txt+=`醫生搖頭：<b class="dn">明年也趕不上開季</b>。`;}
+    AKEYS.forEach(k=>S.ab[k]=clamp(S.ab[k]-5,1,80));
+    card('bad','大傷',txt+'重傷重創身體素質：<b class="dn">全能力 −5</b>。');
+    if(S.bigInj>=2&&!S.traits.glass&&S.age<30){S.traits.glass=true;S.pot.jmp=Math.max(20,S.pot.jmp-6);
+      card('bad','隱藏素質解鎖：玻璃膝','生涯第二次大傷。從此傷病如影隨形——未來每季受傷率<b class="dn">不低於 40%</b>，彈跳潛力 −6。');}
+  }
+  board(1);
+}
+/* 金額（單位：萬台幣）→ 中文億／萬寫法：19700 → 1億9,700萬 */
+function fmtM(w){
+  w=Math.round(w||0);
+  const neg=w<0;w=Math.abs(w);
+  const y=Math.floor(w/10000),m=w%10000;
+  const s=(y?y+'億':'')+(m?m.toLocaleString()+'萬':(y?'':'0萬'));
+  return (neg?'−':'')+s;
+}
+/* 記分板窄格用的短寫：19700 → 1.97億 */
+function fmtShort(w){
+  w=Math.round(w||0);
+  return w>=10000?(w/10000).toFixed(w>=100000?0:2).replace(/\.?0+$/,'')+'億':w.toLocaleString()+'萬';
+}
+/* 膝蓋負荷（真實世界生涯最多斷兩次 ACL）：
+   每季累積砍到兩成；上限同步下修，否則兩者相乘會讓 ACL 永遠不會發生（實測 200 局 0 次）。
+   淨效果＝觸發頻率減半（原本約 8 季一次 → 16 季一次），並硬性封頂 2 次。 */
+const ACL_MAX=2;
+function kneeCap(){return S.traits.ironknee?64:32;}
+function kneeAccrue(){
+  if(isAma()||S.seasonFactor<=0||S.kneeOp>=ACL_MAX)return;
+  const m=S.effort===1?1.25:S.effort===-1?0.65:1;
+  S.knee+=(S.ab.jmp+S.ab.fin)/19*0.2*m*(S.kneeOp?1.2:1)*(S.traits.spring?1.2:1);
+}
+function kneeGamble(cont){
+  if(isAma()||S.kneeOp>=ACL_MAX||S.knee<kneeCap()){cont();return;}
+  addAb('jmp',-4);board(1);
+  card('bad','膝蓋拉起警報','MRI 上的白影讓醫生沉默了三秒——彈跳先 <b class="dn">−4</b>。兩個選項攤在你面前。');
+  const succ=S.traits.ironknee?85:55;
+  choose('抉擇：你的膝蓋撐到極限了',[
+    {t:'動 ACL 重建手術',main:true,s:'報銷一整年｜回來彈跳 −6、切入終結 +3~8（改打技術流）',f:()=>{
+      S.knee=0;S.kneeOp++;S.rehab=1;addAb('jmp',-6);const g=ri(3,8);addAb('fin',g);
+      if(S.kneeOp>=2){S.ab.jmp=Math.round(S.ab.jmp/2);S.ab.fin=Math.round(S.ab.fin/2);
+        card('bad','二度動刀','第二次進手術室——彈跳與切入終結<b class="dn">直接砍半</b>，只能靠三分與腦袋續命。');}
+      card('gold','手術成功',`重建很順利。漫長復健後，你學會用假動作代替蠻力——切入終結 <b class="up">+${g}</b>。（本季報銷）`);
+      S.kneeSucc=0;cont();}},
+    {t:'打針硬撐這一季',warn:true,s:`成功率 ${succ}%｜失敗＝ACL 斷裂，隔年報銷`,f:()=>{
+      if(chance(succ)){S.knee=Math.max(0,S.knee-20);addAb('fin',3);
+        S.kneeSucc=(S.kneeSucc||0)+1;
+        card('good','險過一關','封閉針撐住了，你咬牙打完球季——負荷 <b class="hl">−20</b>。這是在跟時間借命。');
+        if(S.kneeSucc>=2&&!S.traits.ironknee){S.traits.ironknee=true;
+          card('gold','隱藏素質解鎖：鐵膝','兩次都靠打針撐過去，完全沒進手術室——<b class="hl">負荷上限翻倍、打針成功率翻倍</b>。');}
+        cont();}
+      else{S.kneeOp++;S.rehab=1;S.knee=0;addAb('jmp',-10);S.bigInj++;
+        card('bad','ACL 斷裂','落地的瞬間，膝蓋發出所有人都聽見的聲音。隔年<b class="dn">全年報銷</b>，彈跳 <b class="dn">−10</b>。');
+        if(S.bigInj>=2&&!S.traits.glass&&S.age<30){S.traits.glass=true;
+          card('bad','隱藏素質解鎖：玻璃膝','受傷率從此不低於 40%。');}
+        cont();}}}]);
+}
+
+/* ---- 業餘賽季（HBL／UBA／社會甲組）---- */
+function amaSeason(){
+  if(S.seasonFactor===0){card('bad','','整季只能在場邊看隊友比賽。');
+    S.log.push({y:S.year,age:S.age,tm:S.school||LV[S.lv].n,line:'傷缺全季',inj:true});
+    maybeIntl(()=>nextStep());return;}
+  const cups=S.stage==='HS'?[[S.lv==='HS_B'?'HBL 乙級聯賽':'HBL 甲級聯賽',8,18],['全國中等學校運動會',5,6]]
+    :S.stage==='U'?[[S.lv==='UBA2'?'UBA 二級聯賽':'UBA 一級聯賽',8,12],['全國大專運動會',5,5]]
+    :[['社會甲組聯賽',6,4]];
+  if(S.stage==='HS'&&ovr()>=42)cups.push(['國際邀請賽／亞青選拔',5,10]);
+  const thr=S.stage==='HS'?[52,45,39,33,27]:[62,55,48,42,36];
+  const tB=S.stage==='HS'?({1:6,2:0,3:-6})[S.tier]:0;
+  const usage=S.stage==='HS'?({1:0.75,2:1.0,3:1.3})[S.tier]:1;
+  let gain=0,exp=0,lines=[],plain=[];
+  cups.forEach(c=>{
+    const pw=ovr()+tB+ri(-8,8);
+    const i=pw>=thr[0]?0:pw>=thr[1]?1:pw>=thr[2]?2:pw>=thr[3]?3:pw>=thr[4]?4:5;
+    const rk=['冠軍','亞軍','四強','八強','十六強','預賽出局'][i];
+    const pts=Math.round(([c[1],c[1]*0.7,c[1]*0.55,c[1]*0.4,c[1]*0.3,c[1]*0.2][i])*1.15+ovr()/22);
+    const ex=Math.round(c[2]*[1,0.8,0.6,0.4,0.25,0.15][i]*(S.stage==='HS'?1:1.1));
+    gain+=pts;exp+=ex;
+    lines.push(`${c[0]}：<b class="hl">${rk}</b>（+${pts} 點・曝光 +${ex}）`);plain.push(`${c[0]}${rk}`);
+    if(i===0){S.honors.push(`${S.year} ${c[0]}冠軍`);
+      if(S.stage==='U'&&!S.traits.academy){S.traits.academy=true;
+        card('gold','隱藏素質解鎖：學院派','大學的科學化訓練與防護打下扎實底子——<b class="hl">25 歲前受傷率 −5%、季初擲骰期望值提升</b>。');}}
+    /* 個人獎項：球權大的人更容易被看見 */
+    if(i<=2&&chance(clamp((ovr()-thr[2])*4*usage,5,80))){
+      const aw=S.stage==='HS'?'HBL':S.stage==='U'?'UBA':'甲組';
+      const w=chance(35)?'MVP':chance(50)?'最佳五人':'得分王';
+      S.honors.push(`${S.year} ${aw}${w}`);S.exp+=w==='MVP'?12:6;
+      card('gold','個人獎項',`${aw} <b class="hl">${w}</b>！`);}
+  });
+  S.pool+=gain;S.exp+=exp;
+  S.log.push({y:S.year,age:S.age,tm:S.school||LV[S.lv].n,line:plain.join('、'),inj:false});
+  card('','年度賽事',lines.join('<br>')+`<div class="statline">能力點 ${gain} 點於季末分配｜球權係數 ×${usage}（${S.stage==='HS'?['','名門板凳','中堅主力','新興核心'][S.tier]:'主力'}）</div>`);
+  maybeIntl(()=>nextStep());
+}
+
+/* ---- 職業賽季 ---- */
+function proSeason(){
+  if(!S.role)S.role=roleOf();
+  const st=simSeason();S.lastSt=st;
+  if(S.effort&&S.seasonFactor>0){st.d+=S.effort;
+    st.PTS=+(st.PTS*(1+S.effort*0.05)).toFixed(1);}
+  S.lastD=st.d;
+  accStat(st);
+  if(S.seasonFactor===0)card('bad','球季數據','（傷缺，本季無出賽紀錄）');
+  else card('','球季數據',`<span class="pill">${S.team||LV[S.lv].n}</span><span class="pill">${POSN[S.pos]}</span><span class="pill">${roleN()}</span><div class="statline">${statLine(st)}</div>`);
+  if(st.form===-1)card('bad','巨大的低潮','手感消失得毫無道理。你多練了兩百顆，球還是不進。');
+  if(st.form===1)card('gold','生涯年','籃框看起來像游泳池，你閉著眼都知道球會進。');
+  S.log.push({y:S.year,age:S.age,tm:S.team||LV[S.lv].n,p:S.pos,line:S.seasonFactor===0?'傷缺全季':statLine(st),st:st,inj:S.seasonFactor<=0.45});
+  /* 鐵人 */
+  const healthy=S.seasonFactor>=0.95&&st.GP>=LV[S.lv].g*0.8;
+  if(healthy){S.ironStreak++;
+    if(S.ironStreak>=6&&!S.traits.iron)trait('iron','連續五年全勤級出賽——鋼鐵般的身體，未來每季受傷率<b class="hl">不高於 10%</b>。');}
+  else if(S.seasonFactor<0.95)S.ironStreak=0;
+  tagSeason(st);   /* 球員定位標籤（含迷因標籤） */
+  /* 3D 之神 */
+  if(st.tp>=0.38&&st.DEF>=8&&S.seasonFactor>0.7)S.threeStreak++;else S.threeStreak=0;
+  if(S.threeStreak>=3&&!S.traits.threeD)
+    trait('threeD','三分穩定、防守可靠——球隊永遠需要你這種人。<b class="hl">衰退曲線大幅延後</b>。');
+  /* 彈簧人 */
+  if(!S.traits.spring&&S.ab.jmp>=72&&st.REB>=8.5&&bucket())
+    trait('spring','你的滯空讓轉播單位每場都做慢動作——<b class="hl">切入終結命中提升</b>，但膝蓋負荷累積加快。');
+  /* 洋將殺手 */
+  if(!S.traits.killer&&S.org==='TW'&&st.d>=8&&POS_IMP[S.pos]<=0.85){
+    S.traits.killer=true;S.impBonus=0.15;
+    card('gold','隱藏素質解鎖：洋將殺手','教練把洋將換下去、把球給你——<b class="hl">你這個位置的上場時間壓縮永久改善</b>。');}
+  /* 獨食者 */
+  if(!S.traits.hog&&S.role==='A'&&st.d<0&&S.prevD<0&&bucket())
+    trait('hog','球到你手上就不會再傳出來，數據漂亮但球隊贏不了——<b class="dn">教練信任下降、報價變少</b>。',1);
+  awards(st);
+  kneeAccrue();
+  kneeGamble(()=>maybeIntl(()=>nextStep()));
+}
+/* ============ 獎項系統 ============
+   獎項給能力點（AW_PT）並累積榮譽分。NBA 跑完整體系，台灣職籃／CBA 跑核心獎項。 */
+const AW_PT={'年度MVP':7,'最有價值球員':7,'總冠軍MVP':6,'最佳防守球員':5,
+ '東區第一隊':4,'西區第一隊':4,'年度第一隊':4,'防守第一隊':4,
+ '東區第二隊':3,'西區第二隊':3,'年度第二隊':3,'防守第二隊':3,
+ '東區第三隊':2,'西區第三隊':2,'年度第三隊':2,'防守第三隊':2,
+ '最佳新人':4,'最佳第六人':3,'進步最多球員':3,'最佳關鍵球員':3,
+ '得分王':3,'助攻王':3,'籃板王':3,'阻攻王':3,'抄截王':3,'三分王':2,
+ '本土MVP':4,'分區冠軍MVP':4,'明星賽MVP':3,'明星賽':1,'月最佳球員':1,'月最佳新秀':1,
+ '三分球大賽冠軍':2,'灌籃大賽冠軍':2,'技術挑戰賽冠軍':1,'新秀對抗賽MVP':2,
+ '季中錦標賽冠軍':2,'季中錦標賽MVP':3,'分區冠軍':3,'東區冠軍':3,'西區冠軍':3,'總冠軍':4,
+ '新秀對抗賽':1,'三分球大賽':1,'灌籃大賽':1,'技術挑戰賽':1};
+const LEAD_TH={
+ NBA:{PTS:[30,34],AST:[10.5,13],REB:[13.5,16],BLK:[2.8,3.6],STL:[2.1,2.7]},
+ CBA:{PTS:[29,33],AST:[10,12],REB:[13,15.5],BLK:[2.6,3.4],STL:[2.0,2.6]},
+ TW: {PTS:[28,32],AST:[9.5,11.5],REB:[12.5,15],BLK:[2.5,3.3],STL:[2.0,2.5]}};
+function award(lg,name,extra){
+  S.honors.push(`${S.year} ${lg}${name}`);
+  const pt=AW_PT[name]||0;
+  if(pt){S.pool+=pt;S.awPts=(S.awPts||0)+pt;}
+  S.exp+=Math.max(2,pt);
+  if(extra&&S.awNotes)S.awNotes.push(extra);
+}
+function monthlyAwards(st,lg,rookie){
+  let mp=0,mr=0;
+  for(let m=0;m<6;m++){
+    if(mp<2&&st.d>=9&&chance(clamp(2+(st.d-9)*1.2,2,14))){award(lg,'月最佳球員');mp++;}
+    else if(mr<2&&rookie&&st.d>=1&&chance(clamp(5+st.d*1.5,5,20))){award(lg,'月最佳新秀');mr++;}
+  }
+}
+function awards(st){
+  const b=bucket();if(!b||S.seasonFactor===0)return;
+  const y=S.year,lg=LGN[b],t=statBox(b,'RS');
+  const th=LEAD_TH[b]||LEAD_TH.TW, full=LV[S.lv].g;
+  const gpOk=st.GP>=full*0.6, nba=(b==='NBA');
+  S.awNotes=[];
+  const rookie=t.yr===1&&!S.rookieDone;
+  /* 明星賽（含 MVP） */
+  let asP=clamp(16+st.d*6,2,86);
+  if(S.traits.viral)asP=Math.max(asP,55);
+  if(S.team===TW_TEAMS[0]&&b==='TW')asP=clamp(asP+30,3,97);
+  const isAS=gpOk&&chance(asP);
+  if(isAS){t.AS++;award(lg,'明星賽');
+    if(st.d>=8&&chance(clamp(8+(st.d-8)*3,8,35)))award(lg,'明星賽MVP');}
+  monthlyAwards(st,lg,rookie);
+  /* 五大單項王＋三分王 */
+  const lead=(v,arr,nm)=>{ if(!gpOk)return;
+    if(v>=arr[1]&&chance(72))award(lg,nm);
+    else if(v>=arr[0]&&chance(clamp(14+(v-arr[0])/(arr[1]-arr[0])*34,14,52)))award(lg,nm);};
+  lead(st.PTS,th.PTS,'得分王'); lead(st.AST,th.AST,'助攻王'); lead(st.REB,th.REB,'籃板王');
+  lead(st.BLK,th.BLK,'阻攻王'); lead(st.STL,th.STL,'抄截王');
+  if(st.tp>=0.415&&st.TPA>=4.5&&gpOk&&chance(st.tp>=0.45?55:22))award(lg,'三分王');
+  /* 年度大獎 */
+  const mvpGate=nba?12:b==='CBA'?12:11;
+  const eliteStat=st.PTS>=th.PTS[0]*0.92||st.AST>=th.AST[0]*0.92||st.REB>=th.REB[0]*0.92;
+  let gotMVP=false;
+  if(st.d>=mvpGate&&st.MIN>=30&&st.GP>=full*0.75&&S.seasonFactor>=0.9&&eliteStat){
+    const pr=clamp(4+(st.d-mvpGate)*3.2,4,46);
+    if(chance(pr)){award(lg,nba?'最有價值球員':'年度MVP','米高·佐敦獎');gotMVP=true;}
+  }
+  if(b==='TW'&&!gotMVP&&st.d>=7&&st.MIN>=28&&st.GP>=full*0.7&&chance(clamp(8+(st.d-7)*3,8,40)))award(lg,'本土MVP');
+  const defScore=st.DEF+st.BLK*3+st.STL*3;
+  if(gpOk&&st.DEF>=8&&chance(clamp(18+(defScore-14)*4,18,88)))award(lg,'最佳防守球員','Hakeem Olajuwon獎');
+  if(rookie){S.rookieDone=true;
+    if(st.d>=1&&chance(clamp(25+(st.d-1)*12,25,95)))award(lg,'最佳新人',nba?'Wilt Chamberlain獎':'');}
+  if(nba){
+    if((S.role==='R'||S.role==='D')&&st.MIN<30&&st.PTS>=13&&gpOk&&chance(clamp(20+(st.PTS-13)*6,20,80)))
+      award(lg,'最佳第六人','John Havlicek獎');
+    const jump=st.d-(S.prevD||0);
+    if(jump>=5&&st.d>=2&&gpOk&&chance(clamp(25+(jump-5)*8,25,85)))award(lg,'進步最多球員','George Mikan獎');
+    if(S.traits.clutch&&st.d>=4&&gpOk&&chance(45))award(lg,'最佳關鍵球員','Jerry West獎');
+    else if(st.d>=9&&gpOk&&chance(18))award(lg,'最佳關鍵球員','Jerry West獎');
+    const conf=S.conf||(S.conf=chance(50)?'東區':'西區');
+    if(gpOk&&st.MIN>=28&&st.GP>=full*0.7){
+      const tier=st.d>=15?1:st.d>=11?2:st.d>=8?3:0;
+      if(tier&&chance(clamp(42-(tier-1)*4,26,50)))award(lg,`${conf}第${['一','二','三'][tier-1]}隊`);
+      const dtier=defScore>=26?1:defScore>=20?2:defScore>=15?3:0;
+      if(dtier&&chance(clamp(38-(dtier-1)*4,24,44)))award(lg,`防守第${['一','二','三'][dtier-1]}隊`);
+    }
+  }else if(gpOk&&st.MIN>=28&&st.d>=9&&st.GP>=full*0.7&&chance(38)){
+    award(lg,`年度第${st.d>=15?'一':st.d>=12?'二':'三'}隊`);
+  }
+  specialEvents(st,b,lg,isAS,rookie);
+  runPlayoffs(st,b,lg);
+  /* 收尾 */
+  const added=S.honors.filter(x=>x.startsWith(String(y)));
+  if(added.length){
+    const names=added.map(x=>x.slice(5).replace(lg,''));
+    const cnt={};names.forEach(n=>cnt[n]=(cnt[n]||0)+1);
+    /* 獎項通知：金色獎盃列表，與里程碑（藍色橫幅）刻意不同 */
+    const BIG=/最有價值球員|年度MVP|總冠軍|最佳防守球員|第一隊|最佳新人/;
+    card('award',`${y} 年度獎項 · ${lg}`,
+      Object.keys(cnt).map(n=>`<span class="aw${BIG.test(n)?' aw-big':''}">${n}${cnt[n]>1?` ×${cnt[n]}`:''}</span>`).join('')
+      +(S.awNotes.length?`<div class="statline">${S.awNotes.join('、')}</div>`:'')
+      +(S.awPts?`<div class="aw-pt">獎項帶來 <b>${S.awPts}</b> 點能力點</div>`:''));
+    S.awPts=0;
+    if(S.traits.yips){untrait('yips');card('good','走出陰影','站上頒獎台的那一刻，罰球線的雜音消失了——<b class="hl">罰球陰影痊癒</b>。');}
+    if(S.traits.glass&&!S.traits.phoenix&&added.some(x=>/MVP|最有價值|得分王|最佳防守|最佳新人/.test(x))){
+      S.traits.phoenix=true;untrait('glass');S.pool+=8;
+      card('gold','隱藏素質解鎖：浴火重生','那些殺不死你的，真的讓你更強大了——<b class="hl">玻璃膝解除，並獲得 8 點能力點</b>。');}
+  }
+}
+/* ---- 特殊賽事：入選門檻掛在能力值上 ---- */
+function specialEvents(st,b,lg,isAS,rookie){
+  const a=S.ab,B=LV[S.lv].par,out=[];
+  const avg3=0.359;
+  if(b==='NBA'&&S.seasonFactor>=0.6){
+    const w=clamp(5+st.d*0.9,3,26);
+    if(chance(w)){award(lg,'季中錦標賽冠軍');
+      if(st.d>=6&&chance(40))award(lg,'季中錦標賽MVP');
+      out.push('季中錦標賽（NBA 盃）奪冠');}
+    else out.push('季中錦標賽小組賽淘汰');
+  }
+  if(S.seasonFactor>=0.6&&(isAS||st.d>=2)){
+    if(st.tp>=avg3+0.021&&a.tre>=B+5){
+      award(lg,'三分球大賽');
+      if(chance(clamp(10+(st.tp-avg3)*160+(a.tre-B)*0.8,8,42))){award(lg,'三分球大賽冠軍');out.push('三分球大賽冠軍');}
+      else out.push('三分球大賽止步');
+    }
+    if(a.jmp>50){
+      award(lg,'灌籃大賽');
+      if(chance(clamp(9+(a.jmp-50)*1.0,8,40))){award(lg,'灌籃大賽冠軍');out.push('灌籃大賽冠軍');}
+      else out.push('灌籃大賽止步');
+    }
+    if(a.hdl+a.pas+a.iq>=(B+7)*3){
+      award(lg,'技術挑戰賽');
+      if(chance(clamp(12+(a.hdl+a.pas+a.iq-(B+7)*3)*0.8,10,40))){award(lg,'技術挑戰賽冠軍');out.push('技術挑戰賽冠軍');}
+    }
+  }
+  if((rookie||statBox(b,'RS').yr===2)&&st.MIN>=15&&S.seasonFactor>=0.6){
+    award(lg,'新秀對抗賽');
+    if(st.PTS>=18&&chance(38)){award(lg,'新秀對抗賽MVP');out.push('新秀對抗賽MVP');}
+  }
+  if(out.length)card('info','特殊賽事',out.join('｜'));
+}
+/* ---- 季後賽三輪：每輪獨立數據，對手越強越難打 ---- */
+function runPlayoffs(st,b,lg){
+  if(S.seasonFactor<0.5)return;
+  const base=({TW:38,CBA:30,NBA:52})[b]||40;
+  const pin=clamp(base*0.8+st.d*2.0+(S.traits.loyal?3:0)+(S.champBoost||0),6,88);
+  if(!chance(pin)){card('info','球季結束','球隊沒有擠進季後賽，你只能在家看轉播。');return;}
+  const rounds=[['PO','季後賽',ri(4,7)],['CF','分區冠軍賽',ri(4,7)],['FN','總冠軍賽',ri(4,7)]];
+  let alive=true,txt=[];
+  for(let i2=0;i2<rounds.length&&alive;i2++){
+    const sp=rounds[i2][0],nm=rounds[i2][1],gm=rounds[i2][2];
+    const line=simLine({games:gm,f:1,tough:true,d:st.d-1-i2*0.5});
+    line.GP=gm;accSplit(sp,line);
+    txt.push(`<span class="pill">${nm}</span><div class="statline">${statLine(line)}</div>`);
+    const winP=clamp(32+st.d*1.15-(i2*7)+(S.traits.clutch?6:0),8,66);
+    if(chance(winP)){
+      if(sp==='CF'){ award(lg,(S.conf||'分區')+'冠軍');
+        if(line.d>=5&&chance(45))award(lg,'分區冠軍MVP'); }
+      if(sp==='FN'){ award(lg,'總冠軍'); S.champ=true;S.champTeam=S.team;
+        if(line.d>=4&&chance(50))award(lg,'總冠軍MVP'); }
+    }else{ alive=false;
+      if(sp==='PO')txt.push('<div class="statline">季後賽第一輪止步。</div>');
+      if(sp==='CF')txt.push('<div class="statline">分區冠軍賽敗北，離總冠軍賽只差一步。</div>');
+      if(sp==='FN')txt.push('<div class="statline">總冠軍賽輸了。這個夏天會很長。</div>');
+    }
+  }
+  card('info','季後賽',txt.join(''));
+}
+/* ---- 國際賽 ---- */
+function maybeIntl(done){
+  const asia=(S.year-2026)%4===0, wc=(S.year-2028)%4===0;
+  if(S.stage==='HS'||(!asia&&!wc)||ovr()<52||S.seasonFactor<0.5||S.rehab>0){done();return;}
+  const name=asia?'亞洲盃':'世界盃資格賽';
+  choose(`中華隊徵召 · ${name}`,[
+    {t:'披上國家隊戰袍',main:true,s:'依成績獲得能力點｜下季受傷率 +10%',f:()=>{
+      const b=clamp(Math.round((ovr()-52)*0.35),0,8),r=R()*100+b;
+      const i=r>=95?0:r>=86?1:r>=76?2:r>=45?3:4;
+      const rk=['冠軍','亞軍','季軍','複賽止步','小組出局'][i],pts=[6,5,4,2,1][i];
+      let gp=pts;if(S.traits.hero)gp=Math.max(pts,2);
+      S.pool+=gp;S.injNext=S.traits.hero?0:10;S.intl++;S.exp+=[14,10,8,4,2][i];
+      if(i<=1)S.intlTop++;
+      if(i<=2)S.honors.push(`${S.year} ${name}${rk}`);
+      if(!S.traits.hero&&S.intl>=3&&S.intlTop>=2)
+        trait('hero','只要穿上中華隊球衣，你的痛覺就會消失——<b class="hl">國際賽不再增加受傷風險，能力點保底 +2</b>。');
+      let ex='';
+      if((i===0&&chance(30*(S.traits.clutch?2:1)))||(i===1&&chance(10))){S.honors.push(`${S.year} ${name}MVP`);ex='你被選為<b class="hl">賽會MVP</b>！';}
+      card(i<=1?'gold':'info',name,`中華隊最終成績：<b class="hl">${rk}</b>。${ex}獲得能力點 <b class="hl">${gp}</b>。`);
+      done();}},
+    {t:'以調整為由婉拒',s:'保住身體，但少一次曝光',f:done}]);
+}
+
+/* ---- 季末 ---- */
+function phaseEnd(){
+  board(2);
+  if(!isAma()||LV[S.lv].sal){
+    const sal=salaryNow();S.salary+=sal;
+    /* 代言只有職業球員拿得到（學生時期的曝光度只影響招募與選秀） */
+    const en=isAma()?0:Math.round(S.exp*1.2*(S.traits.viral?2.5:1));
+    S.endorse+=en;S.salary+=en;
+    card('','季末結算',`${isAma()?'獎助學金':'年薪'} <b class="hl">${fmtM(sal)}</b>${en?`＋代言 <b class="hl">${fmtM(en)}</b>`:''}（生涯累計 ${fmtM(S.salary)}）${S.ct?`｜合約剩 ${Math.max(0,S.ct.yrs-1)} 年`:''}`);
+  }
+  const go=()=>movement();
+  if(S.pool>0){const p=S.pool;S.pool=0;
+    choose('',[{t:`▸ 分配能力點（${p} 點・賽事／國際賽成果）`,main:true,
+      f:()=>allocUI({pool:p},'季末能力點分配',go)}]);}
+  else go();
+}
+
+/* ---- 升降級與去向 ---- */
+function movement(){
+  const o=ovr();
+  if(S.stage==='HS'){if(S.stageYr<3)advance();else pathHS();return;}
+  if(S.stage==='U'){if(S.stageYr<4)advance();else pathU();return;}
+  if(S.lv==='AMA'){
+    if(S.age>=26){endGame('多年落選，'+S.year+' 年結束球員身分，轉任基層教練。');return;}
+    choose('社會甲組球季結束',[
+      {t:'再投一次選秀',main:true,f:()=>runDraft(false,()=>advance())},
+      {t:'高掛球鞋',warn:true,f:()=>endGame('在社會甲組畫下句點。')}]);
+    return;}
+  /* 職業 */
+  if(S.skipMid){advance();return;}
+  if(o<38){endGame('能力跌破職業水準，'+S.year+' 年球季後遭釋出。');return;}
+  /* 兵役 */
+  if(S.org==='TW'&&!S.milDone&&S.age>=22&&S.age<=24){militaryService(()=>afterMove(o));return;}
+  afterMove(o);
+}
+function afterMove(o){
+  if(S.org==='CBA')S.cbaYears++;
+  /* 交易：每年獨立檢查（毒瘤／獨食者更容易被送走） */
+  if(bucket()&&S.teamYears>=1&&chance(9+(S.traits.cancer?18:0)+(S.traits.hog?10:0))){
+    const nt=pick(teamsOf(S.org).filter(t=>t!==S.team));
+    const star=o>=LV[S.lv].par+4;
+    if(star&&!S.traits.cancer){
+      choose('交易大限：他隊送來報價，球團徵詢你的意見',[
+        {t:'點頭同意，換個環境',main:true,s:`前往 ${nt}（奪冠率 ${champRate(nt)}%）`,
+         f:()=>{S.team=nt;S.teamYears=0;S.champThisTeam=false;card('info','轉隊',`你打包行李，前往 <b class="hl">${nt}</b>。`);afterMove2(o);}},
+        {t:'行使否決權，我要留下',warn:true,s:'忠誠有代價：下一張合約薪資 ×0.8',
+         f:()=>{S.ct.mult=+(S.ct.mult*0.8).toFixed(2);card('info','否決交易','你按下否決鍵。球團的重建計畫被你打亂了。');afterMove2(o);}}]);
+      return;}
+    S.team=nt;S.teamYears=0;S.champThisTeam=false;
+    card('bad','交易','球團一通電話就把你送走了。新東家，好好打吧。');
+  }
+  /* 主力球員可以主動要求交易：把自己送去強隊（奪冠機率大增，但要付代價） */
+  else if(bucket()&&o>=LV[S.lv].par+6&&S.teamYears>=2&&!S.tradeAsked&&chance(35)){
+    const cands=shuffle(teamsOf(S.org).filter(t=>t!==S.team)).slice(0,3)
+      .map(t=>({t:t,cr:champRate(t)})).sort((a,b2)=>b2.cr-a.cr);
+    const best=cands[0];
+    choose('你是球隊主力：要不要要求交易？',[
+      {t:'留下來，把這支球隊帶起來',main:true,s:'母隊奪冠率因你 +4%｜忠誠形象',
+       f:()=>{S.tradeAsked=true;S.champBoost=(S.champBoost||0)+4;
+         card('good','留隊宣言','你在記者會上說：「我要在這裡贏。」——球團加碼補強，<b class="hl">奪冠率提升</b>。');afterMove2(o);}},
+      {t:'要求交易到 '+best.t,warn:true,s:'奪冠率 '+best.cr+'% → 大幅提升｜球迷會罵、下張合約 ×0.9',
+       f:()=>{S.tradeAsked=true;S.team=best.t;S.teamYears=0;S.champThisTeam=false;
+         S.champBoost=(S.champBoost||0)+10;
+         if(S.ct)S.ct.mult=+(S.ct.mult*0.9).toFixed(2);
+         card('info','要求交易','你透過經紀人放話。三天後交易成立——你去了 <b class="hl">'+best.t+'</b>，社群上罵聲一片，但你離冠軍更近了。');
+         afterMove2(o);}},
+      {t:'什麼都不說，繼續打',f:()=>{S.tradeAsked=true;afterMove2(o);}}]);
+    return;
+  }
+  afterMove2(o);
+}
+function afterMove2(o){
+  if(bucket()){S.svc++;if(S.svc>=3)S.faElig=true;
+    S.teamYears++;
+    if(!S.traits.loyal&&S.teamYears>=10&&S.champ&&S.champTeam===S.team)
+      trait('loyal','這座城市的球迷看著你長大——<b class="hl">母隊續約係數 ≥×1.2，引退評價加成</b>。');
+    if(!S.traits.asia&&S.org==='CBA'&&S.cbaYears>=5&&S.honors.filter(h=>h.includes('CBA')&&h.includes('最佳')).length>=1)
+      trait('asia','在 CBA 你不是外援，是台柱——<b class="hl">轉國內球員身分時薪資係數提升</b>。');}
+  const path=PATHS[S.org],idx=path.indexOf(S.lv);
+  let minReq=LV[S.lv].min;
+  if(S.org==='CBA'&&S.cbaYears>=5)minReq-=4;
+  const perf=S.seasonFactor>=0.5?S.lastD:null;
+  const wonAward=S.honors.some(x=>x.startsWith(String(S.year))&&/王|MVP|最佳/.test(x)&&!x.includes('明星賽'));
+  /* CBA 零容錯：連兩年 d<0 直接解約 */
+  if(S.lv==='CBA_1'&&perf!==null&&perf<0&&S.prevD<0&&!wonAward){
+    card('bad','CBA 解約通知','球團對亞洲外援沒有耐心——兩年打不出來，合約直接終止。');
+    outOfOrg(ovr());return;}
+  if(!wonAward&&o<minReq){
+    if(perf!==null&&perf>=0)card('info','球團評估','體檢數字亮紅燈，但你用<b class="hl">實際成績</b>說話，球團決定續留觀察。');
+    else{demote(o,path,idx);return;}
+  }else if(perf!==null&&perf<=-6&&chance(55)&&!wonAward){
+    card('bad','球團評估','帳面數據遠低於聯盟水準，教練團失去耐心。');demote(o,path,idx);return;}
+  /* 升級（可連跳兩級） */
+  if(idx<path.length-1){const nx=path[idx+1];
+    if(o>=LV[nx].min&&(S.lastD>=0||chance(50))){
+      let to=nx;
+      if(idx<path.length-2){const n2=path[idx+2];if(o>=LV[n2].min+2&&S.lastD>=4)to=n2;}
+      S.lv=to;S.role=roleOf();
+      card('good','升級通知',`表現獲得肯定，${to!==nx?'<b class="hl">連跳兩級</b>':'晉升'} <b class="hl">${LV[to].n}</b>！`);
+      checkMile();
+      if(S.traits.yips){untrait('yips');card('good','走出陰影','重回上一層舞台，節奏找回來了。');}
+      board(2);}}
+  else if(bucket()&&S.role!==roleOf()){
+    const nr=roleOf();
+    card('info','角色調整',`教練團重新評估球權分配，你的定位變成 <b class="hl">${{A:'第一持球',B:'第二得分點',D:'3D 角色',R:'板凳輪替'}[nr]}</b>。`);
+    S.role=nr;}
+  if(!S.ct)S.ct={yrs:2,mult:1};
+  S.ct.yrs--;
+  if(S.ct.yrs<=0){
+    if(bucket()&&S.faElig){faFlow(o);return;}
+    S.ct={yrs:ri(1,2),mult:1};
+    if(bucket())card('info','球團續約',`仍在新人約控制期（服務 ${S.svc}/3 年），球團行使續約權——續 <b class="hl">${S.ct.yrs} 年</b>。`);
+  }
+  crossOffers(o);
+}
+function militaryService(cont){
+  S.milDone=true;
+  choose('兵役：公文來了',[
+    {t:'四個月軍事訓練役',main:true,s:'當季出賽 ×0.75、體能 −1｜不中斷生涯',f:()=>{
+      addAb('sta',-1);S.milType='short';
+      card('info','入伍','剃頭那天隊友來送你。四個月後你回到球場，體重輕了兩公斤。');cont();}},
+    {t:'國訓隊／體育替代役',s:'整季不打聯盟｜+10 能力點｜隔年受傷率 +15%',f:()=>{
+      S.pool+=10;S.injNext=15;S.milYear=true;
+      card('good','進國訓','報到那天你把球衣折好收進行李。這一年沒有聯盟球季，只有訓練——<b class="hl">獲得 10 點能力點</b>。');cont();}},
+    {t:'申請旅外緩徵',s:'兵役推到 30 歲後（返台服役時已是衰退期）',f:()=>{
+      S.milDefer=true;S.milDone=false;
+      card('info','緩徵','經紀人幫你送了文件。你買到了幾年時間，但那張兵單不會消失。');cont();}}]);
+}
+function demote(o,path,idx){
+  if(bucket()&&S.lastD<=-8&&S.age<32&&!S.traits.yips&&S.seasonFactor>=0.5)
+    trait('yips','站上罰球線的瞬間，腦海全是上季被爆的畫面——<b class="dn">系統評價 −3，直到再升級或奪獎才解除</b>。',1);
+  let t=-1;for(let i=idx-1;i>=0;i--){if(o>=LV[path[i]].min){t=i;break;}}
+  const alts=[];
+  if(S.org==='US'){
+    if(o>=LV.CBA_1.min&&chance(Math.round(70*gateCBA())))alts.push({t:'轉戰 CBA 一隊',s:'高薪、高球權、零容錯',f:()=>{signTo('CBA','CBA_1');advance();}});
+    if(o>=LV.TW_1.min)alts.push({t:'返台加盟台灣職籃',s:'落葉歸根',f:()=>{signTo('TW','TW_1');advance();}});}
+  else if(S.org==='CBA'&&o>=LV.TW_1.min)alts.push({t:'返台加盟台灣職籃',f:()=>{signTo('TW','TW_1');advance();}});
+  if(t>=0){
+    if(alts.length){
+      card('bad','降級通知',`成績未達標，球團打算把你放到 <b class="dn">${LV[path[t]].n}</b>——但其他聯盟的邀請也到了。`);
+      choose('接受下放，還是換個舞台？',[{t:'接受下放 '+LV[path[t]].n,main:true,f:()=>{S.lv=path[t];S.role=roleOf();board(2);advance();}},...alts]);
+    }else{S.lv=path[t];S.role=roleOf();card('bad','降級通知',`成績未達標，被下放至 <b class="dn">${LV[path[t]].n}</b>。`);board(2);advance();}
+    return;}
+  outOfOrg(o);
+}
+function outOfOrg(o){
+  const alts=[];
+  if(o>=LV.CBA_1.min&&chance(Math.round(60*gateCBA())))alts.push({t:'轉戰 CBA 一隊',f:()=>{signTo('CBA','CBA_1');advance();}});
+  if(o>=LV.CBA_Y.min)alts.push({t:'CBA 青年隊',f:()=>{signTo('CBA','CBA_Y');advance();}});
+  if(o>=LV.TW_1.min)alts.push({t:'台灣職籃一隊',main:true,f:()=>{signTo('TW','TW_1');advance();}});
+  if(o>=LV.TW_D.min)alts.push({t:'台灣職籃培訓名單',f:()=>{signTo('TW','TW_D');advance();}});
+  alts.push({t:'高掛球鞋',warn:true,f:()=>endGame('無處可去，'+S.year+' 年宣布引退。')});
+  card('bad','戰力外通知','球團給了你一紙釋出公文。手機開始響起，但響的是別的號碼。');
+  choose('下一站',alts);
+}
+function gateUS(o,min){const a=S.age;
+  return a<=24?1:a<=26?0.6:a<=28?0.32:a<=29?0.14:(o>=min+5?0.06:0);}
+function gateCBA(){const a=S.age;return a<=28?1:a<=32?0.7:a<=34?0.4:a<=35?0.15:0;}
+function signTo(org,lv,team,yrs,mult){
+  S.org=org;S.lv=lv;S.stage='PRO';
+  const nt=team||pick(org==='US'&&(lv==='NCAA1'||lv==='NCAA2'||lv==='PREP')?NCAA_SCHOOLS:teamsOf(org));
+  if(nt!==S.team){S.teamYears=0;S.champ=false;S.champTeam=null;}
+  S.team=nt;S.ct={yrs:yrs||2,mult:mult||1};S.role=roleOf();
+  S.pos=S.group;S.posStubborn=false;   /* 換聯盟＝重新分化（回到位置群，季初再依能力登錄） */
+  card('info','簽約',`與 <b class="hl">${nt}</b>（${LV[lv].n}）簽下 <b class="hl">${S.ct.yrs} 年</b>合約${S.ct.mult!==1?`（薪資係數 ×${S.ct.mult.toFixed(2)}）`:''}。`);
+  checkMile();
+  board(2);
+}
+function faFlow(o){
+  const d=S.lastD,b=bucket();
+  let mult=d>=3?1.2:d>=0?1:0.8;
+  if(S.traits.loyal)mult=Math.max(mult,1.2);
+  if(S.traits.cancer)mult*=0.85;
+  if(S.traits.hog)mult*=0.9;
+  const yrs=clamp(Math.round(2+clamp((d+2)/8,0,1)*4-(S.bigInj*0.4+S.kneeOp*0.6)),1,S.age>=34?2:S.age>=32?3:6);
+  const opts=[
+    {t:`與 ${S.team} 續約`,main:true,s:`${yrs} 年｜係數 ×${(mult*0.92).toFixed(2)}（長約折扣）`,
+     f:()=>{S.ct={yrs:yrs,mult:+(mult*0.92).toFixed(2)};card('good','續約',`留在 <b class="hl">${S.team}</b>，簽下 ${yrs} 年。`);crossOffers(o);}},
+    {t:`與 ${S.team} 簽短約`,s:`1 年｜係數 ×${(mult*1.12).toFixed(2)}（賭下次身價）`,
+     f:()=>{S.ct={yrs:1,mult:+(mult*1.12).toFixed(2)};card('info','短約','一年約。明年再談。');crossOffers(o);}}];
+  const n=d>=3?ri(2,3):d>=0?ri(1,2):(chance(50)?1:0);
+  const others=shuffle(teamsOf(S.org).filter(t=>t!==S.team)).slice(0,n);
+  others.forEach(t=>{const m=+(mult*(1+R()*0.18)).toFixed(2);
+    opts.push({t:`跳槽 ${t}`,s:`${yrs} 年｜係數 ×${m}｜奪冠率 ${champRate(t)}%`,
+      f:()=>{signTo(S.org,S.lv,t,yrs,m);crossOffers(o);}});});
+  choose(`自由球員市場（${LGN[b]}｜上季 d ${d>=0?'+':''}${d.toFixed(1)}）`,opts);
+}
+function champRate(t){let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))&0xffff;return 8+(h%22);}
+function crossOffers(o){
+  const fin=()=>advance();
+  /* 台灣 → CBA */
+  if(S.lv==='TW_1'&&o>=52&&S.lastD>=1&&chance(Math.round(45*gateCBA()))){
+    /* 簽約金先擲定，避免「顯示的數字」與「實際入袋」是兩次不同的擲骰 */
+    const bids=shuffle(CBA_TEAMS.slice()).slice(0,2).map(t=>({t,bonus:ri(300,900),yrs:ri(2,3)}));
+    choose('CBA 球團開出亞洲外援合約',[...bids.map(b=>({t:b.t+'（CBA 一隊）',
+      s:`簽約金 ${fmtM(b.bonus)}｜${b.yrs} 年約｜奪冠率 ${champRate(b.t)}%｜零容錯：連兩年打不出來就解約`,
+      f:()=>{S.salary+=b.bonus;signTo('CBA','CBA_1',b.t,b.yrs,1);fin();}})),
+      {t:'留在台灣職籃',main:true,f:fin}]);return;}
+  /* 台灣／CBA → G League 試水溫（比夏季聯盟寬鬆，但薪水掉一個量級） */
+  if((S.lv==='TW_1'||S.lv==='CBA_1')&&o>=50&&S.lastD>=2&&S.age<=29&&chance(Math.round(40*gateUS(o,50)))){
+    const t=pick(US_TEAMS);
+    choose('美國球團遞來發展聯盟合約',[
+      {t:`${t} 的發展聯盟合約`,s:`年薪只有 200 萬，但站得住就能被叫上 NBA｜${S.age} 歲`,
+       f:()=>{card('info','赴美','你把台灣的合約放下，換一張沒有保障的機票。');signTo('US','GL',t,ri(1,2),1);fin();}},
+      {t:'留在原聯盟',main:true,f:fin}]);return;}
+  /* 台灣／CBA → NBA 夏季聯盟 */
+  if((S.lv==='TW_1'||S.lv==='CBA_1')&&o>=54&&S.lastD>=4&&S.age<=29&&chance(Math.round(55*gateUS(o,54)))){
+    const bids=shuffle(US_TEAMS.slice()).slice(0,2);
+    choose('NBA 夏季聯盟邀請函（多隊）',[...bids.map(t=>({t:t+' 夏季聯盟',
+      s:`表現達標 → 雙向合約起跳${o>=66?'（有機會直接進 NBA）':'（先從 G League）'}`,
+      f:()=>{
+        const pass=chance(clamp(45+(o-54)*8,28,90));
+        if(pass){card('gold','夏季聯盟','拉斯維加斯的第三場，你在延長賽投進那顆三分。教練走過來拍你的肩膀說 welcome。');
+          signTo('US',o>=56?'NBA':'GL',t,ri(2,3),1);}
+        else{card('bad','夏季聯盟','四場比賽你只出手了七次。回程飛機上你看著窗外，什麼也沒說。');}
+        fin();}})),
+      {t:'放棄，留在原聯盟',main:true,f:fin}]);return;}
+  fin();
+}
+
+/* ---- 選秀與路口 ---- */
+function runDraft(fromSchool,cb){
+  const o=ovr(),score=Math.round(o+Math.max(0,22-S.age)*2+S.exp*0.25+ri(-4,4));
+  const rd=score>=62?1:score>=56?2:score>=50?3:score>=44?4:0;
+  if(rd===0){card('bad','選秀落榜',`唱名結束，沒有你的名字。（綜合 ${o}｜曝光 ${Math.round(S.exp)}｜評價 ${score}）`);
+    if(fromSchool){card('info','','回到校隊，明年再來。');cb();}else cb('fail');return;}
+  const info=[null,['第 1 輪前段',300,3],['第 1 輪後段',220,3],['第 2 輪',120,2],['受邀試訓（發展合約）',60,1]][rd];
+  const bonus=fmtM(info[1]);
+  const team=pick(TW_TEAMS);
+  const lv=rd<=2&&o>=46?'TW_1':'TW_D';
+  const accept=()=>{
+    S.stage='PRO';S.svc=0;S.faElig=false;S.salary+=info[1];
+    signTo('TW',lv,team,info[2],1);
+    card('gold','台灣職籃選秀會',`<b class="hl">${info[0]}</b> 獲 <b class="hl">${team}</b> 指名！首年保障 <b class="hl">${bonus}</b>。${lv==='TW_1'?'即戰力評價，直接進一隊名單。':'先從培訓名單出發。'}`);
+    S.exp+=rd<=2?10:4;board(0);cb();};
+  if(rd>=3&&S.age<24){
+    choose(`台灣職籃選秀會 · ${info[0]}獲 ${team}指名`,[
+      {t:'接受指名',main:true,s:`保障 ${bonus}｜${lv==='TW_1'?'一隊':'培訓'}`,f:accept},
+      {t:(S.stage==='HS'||(S.stage==='U'&&S.stageYr<4))?'重返校園再拚一年':'重返業餘再拚一年',warn:true,
+       s:'放棄本次指名，明年重新參加選秀',f:()=>{
+        const goU=(S.stage==='HS');
+        card('info',goU?'重返校園':'再等一年','看到自己的順位，你握緊了拳頭。明年不會再是這個數字。');
+        if(goU){S.stage='U';S.stageYr=0;S.lv='UBA1';S.school=pick(UBA1_SCHOOLS);S.pos=null;}
+        else if(S.stage==='U'&&S.stageYr<4){/* 大一~大三：留在校隊 */}
+        else{S.stage='AMA';S.lv='AMA';S.school=pick(['台電','台銀','國訓','中華電信']);S.pos=null;}
+        advance();}}]);
+    return;}
+  accept();
+}
+function pathHS(){
+  const o=ovr(),ex=Math.round(S.exp);
+  const opts=[];
+  if(o>=40&&ex>=20){
+    const offers=shuffle(UBA1_SCHOOLS.slice()).slice(0,3);
+    opts.push({t:'讀 UBA 一級（四年養成）',main:true,s:`${offers.length} 所學校來要你｜綜合 ${o}・曝光 ${ex}`,
+      f:()=>{choose('UBA 一級招募：選一所',offers.map(sc=>({t:sc,s:`每年 2 個賽事｜大二起可投選秀`,
+        f:()=>{S.stage='U';S.stageYr=0;S.lv='UBA1';S.school=sc;S.pos=null;
+          card('info','升學',`進入 <b class="hl">${sc}</b> 籃球隊。`);advance();}})));}});
+  }
+  opts.push({t:'讀 UBA 二級',s:'層級低但球權大，數據漂亮',f:()=>{
+    S.stage='U';S.stageYr=0;S.lv='UBA2';S.school=pick(UBA2_SCHOOLS);S.pos=null;
+    card('info','升學',`進入 <b class="hl">${S.school}</b> 籃球隊。`);advance();}});
+  opts.push({t:'投台灣職籃選秀',s:`18 歲有 +8 年齡加權｜綜合 ${o}・曝光 ${ex}`,f:()=>runDraft(false,r=>{
+    if(r==='fail')choose('落榜之後',[
+      {t:'改讀 UBA 二級',main:true,f:()=>{S.stage='U';S.stageYr=0;S.lv='UBA2';S.school=pick(UBA2_SCHOOLS);advance();}},
+      {t:'加入社會甲組',f:()=>{S.stage='AMA';S.lv='AMA';S.school=pick(['台電','台銀','國訓','中華電信']);advance();}}]);
+    else advance();})});
+  if(o>=42)opts.push({t:'赴 CBA 青年隊',s:'從陌生的城市開始，薪水是台灣的好幾倍',
+    f:()=>{signTo('CBA','CBA_Y',null,3,1);advance();}});
+  if(o>=44)opts.push({t:'赴美（預校／JUCO）',s:`走五級階梯挑戰 NBA${o>=48?'（可直接從 NCAA D2 起跳）':''}`,
+    f:()=>{signTo('US',o>=48?'NCAA2':'PREP',null,3,1);advance();}});
+  choose(`高中畢業 · 綜合 ${o}・曝光 ${ex} · 人生第一個路口`,opts);
+}
+function pathU(){
+  const o=ovr();
+  const opts=[{t:'投台灣職籃選秀',main:true,s:`綜合 ${o}｜曝光 ${Math.round(S.exp)}`,f:()=>runDraft(false,r=>{
+    if(r==='fail')choose('落榜之後',[
+      {t:'加入社會甲組',main:true,f:()=>{S.stage='AMA';S.lv='AMA';S.school=pick(['台電','台銀','國訓','中華電信']);advance();}},
+      {t:'高掛球鞋',warn:true,f:()=>endGame('大學畢業選秀落榜，決定告別球場。')}]);
+    else advance();})}];
+  if(o>=44)opts.push({t:'赴 CBA',s:'亞洲外援合約',f:()=>{signTo('CBA',o>=50?'CBA_1':'CBA_Y',null,ri(2,3),1);advance();}});
+  if(o>=48)opts.push({t:'赴美',s:'從 NCAA／G League 起跳',f:()=>{signTo('US',o>=52?'GL':'NCAA1',null,3,1);advance();}});
+  choose(`大學畢業 · 綜合 ${o}`,opts);
+}
+
+/* ============ 結算 ============ */
+/* 門檻依各聯盟場次體量校準：台灣 36 場／CBA 46 場／NBA 82 場 */
+/* 門檻取自 150 局實測的評價分分佈（TW 中位 ~11,500／75% ~19,000／90% ~27,000） */
+const TIER_TH={TW:[42000,31000,19500,10000],CBA:[40000,29500,18500,9500],NBA:[50000,35000,21500,11000]};
+const TIER_N=['名人堂','世代代表','明星球員','主力輪替','一頁過客'];
+/* 生涯評價分：例行賽為主，季後賽／分區冠軍賽／總冠軍賽加權（大場面更值錢） */
+function careerScore(box){
+  if(!box)return 0;
+  const w={RS:1,PO:1.4,CF:1.7,FN:2.2};
+  let sc=0;
+  SPLITS.forEach(sp=>{const t=box[sp];if(!t)return;
+    sc+=(t.PTS*0.35+t.REB*1.0+t.AST*1.1+t.STL*2.4+t.BLK*2.4+Math.max(0,t.DEF)*6)*w[sp];});
+  return sc;
+}
+function honorScore(b){
+  const lg=LGN[b];let sc=0,mvp=0,king=0;
+  S.honors.forEach(h=>{
+    if(!h.includes(lg)){
+      if(h.includes('亞洲盃')||h.includes('世界盃')){sc+=h.includes('MVP')?150:120;}
+      else if(h.includes('HBL')||h.includes('UBA'))sc+=60;
+      return;}
+    if(h.includes('最有價值球員')||h.includes('年度MVP')){sc+=900;mvp++;}
+    else if(h.includes('本土MVP')){sc+=420;mvp++;}
+    else if(h.includes('總冠軍MVP'))sc+=520;
+    else if(h.includes('分區冠軍MVP'))sc+=300;
+    else if(h.includes('最佳防守球員')){sc+=560;king++;}
+    else if(h.includes('第一隊')){sc+=420;king++;}
+    else if(h.includes('第二隊'))sc+=280;
+    else if(h.includes('第三隊'))sc+=180;
+    else if(h.includes('總冠軍'))sc+=260;
+    else if(h.includes('分區冠軍')||h.includes('東區冠軍')||h.includes('西區冠軍'))sc+=140;
+    else if(h.includes('最佳新人')){sc+=340;king++;}
+    else if(h.includes('最佳第六人')||h.includes('進步最多')||h.includes('最佳關鍵'))sc+=260;
+    else if(h.includes('明星賽MVP'))sc+=200;
+    else if(h.includes('月最佳'))sc+=25;
+    else if(h.includes('大賽冠軍')||h.includes('挑戰賽冠軍')||h.includes('錦標賽冠軍'))sc+=90;
+    else if(h.includes('大賽')||h.includes('挑戰賽')||h.includes('對抗賽'))sc+=15;
+    else if(h.includes('王')){sc+=330;king++;}
+    else if(h.includes('明星賽'))sc+=60;
+  });
+  if(S.traits.loyal)sc+=200;
+  return {sc,mvp,king};
+}
+function tierOf(b){
+  const box=S.stats[b];if(!box||!box.RS)return null;
+  const hs=honorScore(b),sc=careerScore(box)+hs.sc,th=TIER_TH[b];
+  let i=sc>=th[0]?0:sc>=th[1]?1:sc>=th[2]?2:sc>=th[3]?3:4;
+  if(hs.mvp>=2)i=Math.min(i,1);else if(hs.mvp===1)i=Math.min(i,2);else if(hs.king>=2)i=Math.min(i,3);
+  return {i,sc:Math.round(sc),name:LGN[b]+TIER_N[i]};
+}
+function primaryPos(){
+  const e=Object.entries(S.posYears);if(!e.length)return S.pos?POSN[S.pos]:'—';
+  e.sort((a,b)=>b[1]-a[1]);const tot=e.reduce((s,x)=>s+x[1],0);
+  if(e[0][1]>=tot/2)return POSN[e[0][0]];
+  return '搖擺人（'+e.slice(0,2).map(x=>POSN[x[0]]).join('、')+'）';
+}
+/* 生涯數據表：例行賽／季後賽／分區冠軍賽／總冠軍賽 四段，欄位比照 NBA 官方 */
+function statTable(b){
+  const box=S.stats[b];if(!box||!box.RS)return '';
+  const rows=SPLITS.filter(sp=>box[sp]&&box[sp].GP>0).map(sp=>{
+    const t=box[sp],g=t.GP||1,mn=t.MIN/g;
+    const pc=(m,a)=>a>0?(m/a*100).toFixed(1):'-';
+    return `<tr><td class="l">${SPLIT_N[sp]}</td><td>${t.GP}</td><td>${mn.toFixed(1)}</td>
+      <td>${(t.PTS/g).toFixed(1)}</td><td>${(t.FGM/g).toFixed(1)}</td><td>${(t.FGA/g).toFixed(1)}</td><td>${pc(t.FGM,t.FGA)}</td>
+      <td>${(t.TPM/g).toFixed(1)}</td><td>${(t.TPA/g).toFixed(1)}</td><td>${pc(t.TPM,t.TPA)}</td>
+      <td>${(t.FTM/g).toFixed(1)}</td><td>${(t.FTA/g).toFixed(1)}</td><td>${pc(t.FTM,t.FTA)}</td>
+      <td>${(t.REB/g).toFixed(1)}</td><td>${(t.AST/g).toFixed(1)}</td><td>${(t.STL/g).toFixed(1)}</td><td>${(t.BLK/g).toFixed(1)}</td>
+      <td>${(t.PM/g)>0?'+':''}${(t.PM/g).toFixed(1)}</td></tr>`;}).join('');
+  const t=box.RS;
+  return `<p style="margin-top:10px"><b>${LGN[b]||b}</b> · ${t.yr} 季${t.AS?`　明星賽 ${t.AS} 度`:''}</p>
+  <div class="scroll"><table class="fin">
+  <tr><th class="l">賽別</th><th>GP</th><th>MIN</th><th>PTS</th><th>FGM</th><th>FGA</th><th>FG%</th>
+      <th>3PM</th><th>3PA</th><th>3P%</th><th>FTM</th><th>FTA</th><th>FT%</th>
+      <th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>+/−</th></tr>${rows}</table></div>
+  <div class="statline">例行賽累計：${Math.round(t.PTS).toLocaleString()} 分・${Math.round(t.REB).toLocaleString()} 籃板・${Math.round(t.AST).toLocaleString()} 助攻・${Math.round(t.STL).toLocaleString()} 抄截・${Math.round(t.BLK).toLocaleString()} 阻攻</div>`;
+}
+/* ============ 球迷退休留言資料庫（50 則）============
+   c＝分類：1 懷舊致敬｜2 理性分析｜3 催退酸民｜4 退役儀式｜5 未來發展
+   f＝出現條件（吃這段生涯真正發生過的事，不是隨機亂噴） */
+const FAN_CAT={1:'致敬',2:'分析',3:'酸',4:'儀式',5:'未來'};
+const FAN_DB=[
+ /* 一、懷舊感傷與致敬 */
+ {c:1,t:'看到他宣布退休，真的覺得我的青春徹底結束了，小時候熬夜看的球星全都退光了。',f:x=>x.tier<=1},
+ {c:1,t:'雖然知道這一天總會來，但看到官方聲明的那一刻眼眶還是泛紅，感謝你帶給我們這十幾年的精彩比賽。',f:x=>x.tier<=1&&x.yrs>=12},
+ {c:1,t:'一個時代的終結！謝謝你留在球場上的所有汗水與名場面，祝退休生活愉快！',f:x=>x.tier<=1},
+ {c:1,t:'以後看球再也看不到那個招牌動作了，真的好不習慣……',f:x=>x.tier<=2},
+ {c:1,t:'從他剛進聯盟的毛頭小子看到現在滿頭白髮，時間過得太快了，恭喜圓滿完結職業生涯。',f:x=>x.age>=36&&x.yrs>=12},
+ {c:1,t:'能完整經歷他的整個職業生涯是球迷的幸運，Respect 史上最偉大的球員之一！',f:x=>x.tier===0},
+ {c:1,t:'最後一場比賽真的看哭了，即便體能大不如前，但精神和球商依然頂級。',f:x=>x.tier<=2&&x.age>=35},
+ {c:1,t:'謝謝你把我帶進籃球的世界，因為你我才開始打球、開始看 NBA。',f:x=>x.tier<=1||x.nba},
+ {c:1,t:'雖然晚年被各種傷病折磨，但你已經不需要再證明任何事情了，好好享受退休生活吧。',f:x=>x.tier<=2&&(x.bigInj>=2||x.kneeOp>=1)},
+ {c:1,t:'致敬傳奇！以後的球星雖然數據很誇張，但再也沒有人能給我們當年那種熱血沸騰的震撼感了。',f:x=>x.tier===0},
+ /* 二、理性分析與歷史地位 */
+ {c:2,t:'以他的榮譽和生涯累積數據，進名人堂肯定是第一隊首選（First-ballot），完全沒懸念。',f:x=>x.firstBallot},
+ {c:2,t:'論巔峰期宰制力絕對是歷史級別，但可惜生涯中後段傷病太多，影響了總數據的累積。',f:x=>x.tier<=1&&(x.bigInj>=2||x.kneeOp>=1)},
+ {c:2,t:'拿了幾座冠軍、一座 MVP，算不上 GOAT 級別，但絕對是這十年間前三強的超級巨星。',f:x=>x.rings>=1&&x.mvp>=1},
+ {c:2,t:'其實最後兩年轉打替補、帶年輕人成長的態度處理得很好，沒有為了數據硬要球權，生涯評價反而更高了。',f:x=>x.tier<=2&&x.lateBench},
+ {c:2,t:'歷史定位大概落在歷史前 15 到 20 之間吧，再往上就很難擠進去了，畢竟同期對手都太怪物。',f:x=>x.tier<=1&&!x.firstBallot},
+ {c:2,t:'他的風格徹底改變了現代籃球的打法，這點對籃球發展的影響力甚至超越了他的榮譽數字。',f:x=>x.tier<=1&&(x.threeD||x.tag('3D')||x.tag('空間型長人'))},
+ {c:2,t:'晚年轉隊拿冠雖然被酸抱團，但客觀來說他在奪冠季的季後賽貢獻絕對是核心等級。',f:x=>x.rings>=1&&x.traded},
+ {c:2,t:'雖然防守端常常被當突破口，但進攻端的影響力和極致發動機屬性無可替代。',f:x=>x.pts>=18&&(x.tag('人形角錐')||x.tag('單打手'))},
+ {c:2,t:'如果沒有那次大傷，他的總得分和榮譽絕對能再上升一個檔次，真是天妒英才。',f:x=>x.bigInj>=1||x.kneeOp>=1},
+ {c:2,t:'單看高光真的很強，但如果看生涯整體效率值跟高級數據，有些評論其實吹得有點過頭了。',f:x=>x.pts>=18&&x.tag('數據刷子')},
+ {c:2,t:'如果沒有那些傷，他的生涯會是什麼樣子……不敢想。',f:x=>x.glass},
+ {c:2,t:'他是那個時代少數能把洋將換下場的本土球員，這件事本身就是紀錄。',f:x=>x.killer},
+ /* 三、催退與酸民 */
+ {c:3,t:'早就該退了，最後這兩年根本是在拖累球隊薪資空間跟年輕人的成長時間。',f:x=>x.age>=36&&x.lateBench},
+ {c:3,t:'為了刷數據跟湊滿紀錄硬撐到現在，最後幾季打得零零落落，晚節不保有點可惜。',f:x=>x.age>=37&&x.tier>=2},
+ {c:3,t:'每次上場防守都被對手當提款機打，看他被後輩過假的，真的覺得長痛不如短痛，早點退對大家都好。',f:x=>x.tag('人形角錐')},
+ {c:3,t:'拿著全隊最高的頂薪卻只打三成場次，剩下時間都在養傷跟場邊加油，終於肯宣布退休了。',f:x=>x.bigInj>=2&&x.salary>=50000},
+ {c:3,t:'球隊總算可以正式重建了，過去三年為了配合老將陣容綁手綁腳，根本看不到未來。',f:x=>x.age>=36&&x.tier>=2},
+ {c:3,t:'雖然生涯很偉大，但最後一季的「退役巡迴演出」搞得像大秀，影響到球隊爭奪季後賽席次，實在有點自私。',f:x=>x.tier<=1&&x.age>=37},
+ {c:3,t:'高薪低能的典型代表，最後幾年根本就是躺著領錢，退了對薪資上限是莫大的解脫。',f:x=>x.tag('數據刷子')||x.tag('有氧運動員')},
+ {c:3,t:'打不贏就加入、晚年又全場放水防守，雖然退休了但真的對他沒什麼好感。',f:x=>x.traded&&x.rings>=1},
+ {c:3,t:'如果不是靠著巨星光環，以他這兩年的真實表現早就被釋出（Waive）了，撐到現在已經很有面子。',f:x=>x.age>=36&&x.lateBench},
+ {c:3,t:'退休時間點選得挺聰明的，再打下去底褲都要被看穿了，趁還留有一絲尊嚴時優雅轉身。',f:x=>x.tier>=2},
+ {c:3,t:'場外新聞比場上表現還多，這種球員退了對聯盟形象也好。',f:x=>x.scum},
+ /* 四、退役儀式與球衣退役 */
+ {c:4,t:'母隊絕對會幫他掛球衣的吧？畢竟為這座城市帶來過唯一一座總冠軍，功不可沒。',f:x=>x.rings>=1&&x.loyal},
+ {c:4,t:'他待過三支球隊，大家覺得哪幾支會幫他退休背號？我覺得只有第一支和奪冠的那支會。',f:x=>x.teams>=3&&x.tier<=1},
+ {c:4,t:'最後一場客場比賽連客場球迷都站起來起立鼓掌，這就是頂級巨星應得的尊嚴與待遇。',f:x=>x.tier<=1},
+ {c:4,t:'退休巡迴每一場都在換球衣、送簽名鞋，雖然很溫馨，但老實說後面幾場看久了有點審美疲勞。',f:x=>x.tier<=1&&x.age>=36},
+ {c:4,t:'希望球隊能幫他在球館外立雕像，他在這座城市的地位絕對值得一座銅像。',f:x=>x.tier===0&&x.loyal},
+ {c:4,t:'球衣退休是肯定的，但入選名人堂可能還要等幾年排隊，畢竟同期的競爭者太強。',f:x=>x.tier<=1&&!x.firstBallot},
+ {c:4,t:'看到他跟當年宿敵在最後一場比賽賽後擁抱交換球衣，真的有種英雄相惜的感動。',f:x=>x.tier<=2},
+ {c:4,t:'不知道他會選誰當他入選名人堂的介紹人？感覺前教練或是當年奪冠的大哥最有機會。',f:x=>x.tier===0},
+ {c:4,t:'這號碼在球隊歷史上太有代表性了，以後新人敢選這個號碼壓力絕對爆棚。',f:x=>x.loyal||x.teams===1},
+ {c:4,t:'退役儀式請來當年奪冠陣容的所有老隊友，大家重聚在一塊吹牛聊當年，這場面太溫馨了。',f:x=>x.rings>=1},
+ /* 五、未來發展與轉行 */
+ {c:5,t:'以他的球商和說話幽默度，感覺非常適合去電視台當球評，節目效果絕對拉滿！',f:x=>x.iq>=55||x.viral},
+ {c:5,t:'希望他退休後可以考慮回母隊當助理教練或是球員發展顧問，傳承一下經驗給年輕後衛。',f:x=>x.loyal||x.tier<=2},
+ {c:5,t:'感覺他會跟其他老將一樣跑去開 Podcast 節目，畢竟他講話很敢講，開節目一定爆紅。',f:x=>x.viral},
+ {c:5,t:'終於有時間好好陪家人了，看他社群分享跟小孩打球的影片，感覺退休生活會過得很充實。',f:x=>x.kids>=1},
+ {c:5,t:'憑他打球累積的身價跟商業頭腦，接下來應該會看到他投資各種新創公司或進軍時尚圈吧。',f:x=>x.salary>=80000},
+ {c:5,t:'希望不要像某些退役球星一樣亂投資破產，好好做理財，偶爾回球場看比賽就很棒了。',f:x=>x.salary>=30000},
+ {c:5,t:'期待他退休後出版自傳，好好爆料一下當年休息室內幕和那些管理層的宮鬥劇！',f:x=>x.cancer||x.traded||x.teams>=3},
+ {c:5,t:'以他的影響力，搞不好未來幾年有機會加入某支球隊的投資財團，成為小股東或管理層。',f:x=>x.tier<=1&&x.salary>=60000},
+ {c:5,t:'退休後終於不用每天高強度飲食控管跟復健了，希望不要發福太快變胖大叔哈哈。',f:x=>true},
+ {c:5,t:'轉行當教練的話感覺脾氣會太暴躁，因為看到場上球員做不出他當年輕鬆做到的動作會氣死。',f:x=>x.tier<=1},
+ /* 低階／短命生涯的保底留言（不然邊緣球員的留言區會空掉） */
+ {c:1,t:'至少他真的站上過職業舞台，比鍵盤上的我們都強。',f:x=>x.tier>=3},
+ {c:1,t:'那幾顆關鍵三分我還記得，雖然電視轉播只帶到他兩次。',f:x=>x.tier>=3},
+ {c:3,t:'欸這誰？……查了一下，原來真的打過職業喔。',f:x=>x.tier>=4},
+ {c:3,t:'板凳暖了這麼多年，也是一種浪漫啦。',f:x=>x.tier>=3&&x.yrs>=5},
+ {c:5,t:'籃球真的好難，祝福第二人生順利。',f:x=>x.tier>=3},
+ {c:5,t:'回基層帶小球員吧，他最懂那種差一點就上去的心情。',f:x=>x.tier>=2}
+];
+function fanCtx(best,tiers){
+  const H=S.honors.join('|');
+  const cnt=re=>(H.match(re)||[]).length;
+  const b=['NBA','CBA','TW'].find(k=>rs(k))||'TW';
+  const t=rs(b),g=t?Math.max(1,t.GP):1;
+  const last=S.log.filter(r=>r.st).slice(-2);
+  const ty=S.tagYears||{};
+  return {
+    tier:best, nba:!!rs('NBA'),
+    yrs:['TW','CBA','NBA'].reduce((a,k)=>a+((rs(k)||{}).yr||0),0),
+    rings:cnt(/總冠軍(?!MVP)/g), mvp:cnt(/最有價值球員|年度MVP|本土MVP/g),
+    teams:Object.keys(S.tally||{}).length||1,
+    bigInj:S.bigInj, kneeOp:S.kneeOp, age:S.age, salary:S.salary,
+    pts:t?t.PTS/g:0, iq:S.ab.iq, kids:(S.love&&S.love.kids)||0,
+    firstBallot:!!S.traits.legend, loyal:!!S.traits.loyal, glass:!!S.traits.glass,
+    viral:!!S.traits.viral, killer:!!S.traits.killer, scum:!!S.traits.scum,
+    cancer:!!S.traits.cancer, threeD:!!S.traits.threeD, traded:!!S.tradeAsked,
+    lateBench:last.length>0&&last.every(r=>r.st.MIN<20),
+    tag:n=>!!ty[n]
+  };
+}
+function pickFans(x){
+  const out=[],used=new Set();
+  const take=(cat,n)=>{
+    const pool=shuffle(FAN_DB.filter(e=>e.c===cat&&!used.has(e.t)&&(!e.f||e.f(x))));
+    pool.slice(0,n).forEach(e=>{used.add(e.t);out.push(e);});
+  };
+  take(1,x.tier<=1?2:1);          /* 致敬：越強越多 */
+  take(2,2);                       /* 分析：一定有 */
+  take(3,x.tier>=2?2:1);           /* 酸：越弱越多 */
+  take(4,x.tier<=2?1:0);           /* 儀式：有身分才有 */
+  take(5,1);                       /* 未來：一定有 */
+  /* 保底：不足 4 則就跨分類補（低階生涯常見） */
+  if(out.length<4){
+    const pool=shuffle(FAN_DB.filter(e=>!used.has(e.t)&&(!e.f||e.f(x))));
+    pool.slice(0,4-out.length).forEach(e=>{used.add(e.t);out.push(e);});
+  }
+  out.sort((a,b)=>a.c-b.c);
+  return out;
+}
+function endGame(reason){
+  S.done=true;actClear();divider('生涯終幕');
+  card('info','引退',reason);
+  const tiers={},evals=[];let best=4;
+  ['NBA','CBA','TW'].forEach(b=>{if(rs(b)){const t=tierOf(b);tiers[b]=t;best=Math.min(best,t.i);
+    evals.push(`<span class="pill g">${t.name}</span>（評價分 ${t.sc}）`);}});
+  /* 成就型特性 */
+  const reachedTop=(tiers.TW&&tiers.TW.i<=1)||!!rs('CBA')||!!rs('NBA');
+  if(reachedTop){
+    if(S.tier===3&&!S.traits.small){S.traits.small=true;
+      card('gold','隱藏特性：小校之光','當年那所沒人聽過的學校，走出了一個站上頂級舞台的男人。出身，從來不是天花板。');}
+    if(!S.traits.grind&&S.potSum0<=560){S.traits.grind=true;
+      card('gold','隱藏特性：努力仔','天賦平庸的球員千千萬萬，能走到這裡的寥寥無幾。你把汗水熬成了天賦。');}
+  }
+  /* 名人堂 */
+  const HOF={TW:{n:'台灣籃球名人堂',total:90},CBA:{n:'中國籃球名人堂',total:120},NBA:{n:'籃球名人堂',total:450}};
+  const hofs=[];
+  ['TW','CBA','NBA'].forEach(b=>{const t=tiers[b];if(!t)return;
+    if(t.i===0){const th=TIER_TH[b][0],first=t.sc>=th*1.15;
+      const yr=first?1:ri(2,6);
+      const pct=Math.min(99.2,Math.max(75,75+(t.sc-th)/th*40+R()*6-(yr-1)*4));
+      const cap=Object.entries(S.tally).sort((a,b2)=>b2[1]-a[1])[0];
+      hofs.push(`引退 5 年後進入候選，於<b class="hl">第 ${yr} 年投票</b>以得票率 ${pct.toFixed(1)}%（${Math.round(HOF[b].total*pct/100)} 票）登上 <b class="hl">${HOF[b].n}</b>——以 <b class="hl">${cap?cap[0]:'—'}</b> 的代表球員身分留名。${yr===1?'<b class="hl">首輪即殿堂。</b>':''}`);
+      if(first&&!S.traits.legend){S.traits.legend=true;S.legendLg=LGN[b];}
+    }else if(t.i===1){hofs.push(`你連續 ${ri(3,9)} 年入圍${HOF[b].n}票選，最高得票率 ${(55+R()*17).toFixed(1)}%，始終沒跨過門檻。`);}});
+  if(hofs.length)card('gold','名人堂票選',hofs.join('<br><br>'));
+  if(S.traits.legend)card('gold','隱藏素質解鎖：'+(S.legendLg||'')+'歷史級球星','第一年投票就披上金袍——你不只進了殿堂，你定義了一個時代。');
+  /* 第二人生 */
+  if(S.age<25){
+    const second=['你回到母校當助理教練，把自己沒走完的路畫成地圖交給學弟。',
+      '你考到體能訓練師執照，開了一間小工作室，牆上掛著高中的球衣。',
+      '你去了乙組聯賽，週末打球平日上班。有人把你的後仰跳投剪成短影音，留言說這不像業餘。',
+      '你進了運動用品公司做球鞋開發，第一雙上市的鞋，鞋墊內側印著你的球衣號碼。'];
+    card('gold','第二人生',pick(second)+'<br><br><span style="color:var(--dim)">離開球場的人生，也是人生。'+S.name+'，辛苦了。</span>');
+  }
+  /* 年表 */
+  if(S.log.length){
+    const pro=S.log.filter(r=>r.st),ama=S.log.filter(r=>!r.st);
+    if(ama.length)card('','生涯年表（學生／業餘）',
+      `<div class="scroll"><table class="fin"><tr><th class="l">年</th><th>齡</th><th class="l">球隊</th><th class="l">成績</th></tr>`
+      +ama.map(r=>`<tr><td class="l">${r.y}</td><td>${r.age}</td><td class="l">${r.tm}</td><td class="l" style="${r.inj?'color:var(--bad)':''}">${r.line}</td></tr>`).join('')
+      +`</table></div>`);
+    if(pro.length)card('','生涯年表（職業）',
+      `<div class="scroll"><table class="fin"><tr><th class="l">年</th><th>齡</th><th class="l">球隊</th><th>GP</th><th>MIN</th><th>PTS</th><th>REB</th><th>AST</th><th>STL</th><th>BLK</th><th>FG%</th><th>3P%</th><th>+/−</th></tr>`
+      +pro.map(r=>{const s=r.st;return `<tr style="${r.inj?'color:var(--bad)':''}"><td class="l">${r.y}</td><td>${r.age}</td><td class="l">${r.tm}${r.p?'·'+r.p:''}</td><td>${s.GP}</td><td>${s.MIN}</td><td>${s.PTS}</td><td>${s.REB}</td><td>${s.AST}</td><td>${s.STL}</td><td>${s.BLK}</td><td>${(s.fg*100).toFixed(0)}</td><td>${(s.tp*100).toFixed(0)}</td><td>${s.PM>0?'+':''}${s.PM}</td></tr>`;}).join('')
+      +`</table></div>`);
+  }
+  let tables='';['NBA','CBA','TW'].forEach(b=>{if(rs(b))tables+=statTable(b);});
+  card('','生涯累積數據',tables||'<p style="color:var(--dim)">你沒有站上頂級聯盟（台灣職籃一隊／CBA 一隊／NBA），累積數據不列入生涯評價——但年表上的每一場，你都真的打過。</p>');
+  if(evals.length)card('gold','生涯評價',evals.join('<br>'));
+  /* 榮譽 */
+  let hh='（生涯未獲得任何獎項）';
+  if(S.honors.length){const m={};
+    S.honors.forEach(x=>{const p=x.split(' ');const a=p.slice(1).join(' ');(m[a]=m[a]||[]).push(p[0]);});
+    hh=Object.keys(m).map(a=>`· ${a}${m[a].length>1?` ×${m[a].length}`:''}（${m[a].join('、')}）`).join('<br>');}
+  card(S.honors.length?'gold':'','獎項與大賽成績',hh);
+  /* 特性與檔案 */
+  const tags=[];
+  Object.keys(TN).forEach(k=>{if(S.traits[k]&&POSTAG[k])tags.push(`<span class="pill g">${k==='legend'?(S.legendLg||'')+'歷史級球星':TN[k]}</span>`);});
+  if(S.traits.ironknee)tags.push('<span class="pill g">鐵膝</span>');
+  if(S.traits.disc)tags.push('<span class="pill g">自律狂</span>');
+  Object.keys(TN).forEach(k=>{if(S.traits[k]&&!POSTAG[k])tags.push(`<span class="pill b">${TN[k]}</span>`);});
+  S.removed.forEach(x=>tags.push(`<span class="pill strike">${x}</span>`));
+  card('','生涯檔案',
+    `隱藏素質：${tags.join(' ')||'（無）'}<br>
+     主要位置：<b class="hl">${primaryPos()}</b>｜最終身高 <b class="hl">${S.hgt} 公分</b>（潛在 ${S.hgtMax}）<br>
+     ${(()=>{const e=Object.entries(S.tagYears||{});if(!e.length)return '';
+       e.sort((a,b2)=>b2[1]-a[1]);
+       return '生涯定位：'+e.slice(0,4).map(x=>'<span class="pill">'+x[0]+' '+x[1]+'季</span>').join('')+'<br>';})()}
+     學校：${S.tier===1?'HBL 名門':S.tier===2?'HBL 中堅':'HBL 新興'}出身｜國際賽 ${S.intl} 次｜大傷 ${S.bigInj} 次｜ACL 手術 ${S.kneeOp} 次<br>
+     家庭：${(()=>{const L=S.love;
+       const cur=L.st==='married'?`已婚 ${L.partner}（子女 ${L.kids}）`:L.st==='dating'?`交往中 ${L.partner}（${L.dyrs} 年）`:L.st==='divorced'?'離婚':'未婚';
+       const ex=L.exes.length?`｜前任 ${L.exes.map(e=>e.name).join('、')}`:'';
+       const af=L.affairs?`｜外遇 ${L.affairs}(${L.caught})`:'';
+       return cur+ex+af;})()}<br>
+     曝光度 ${Math.round(S.exp)}｜代言收入 ${fmtM(S.endorse)}<br>
+     生涯總收入：<b class="hl" style="font-size:19px">${fmtM(S.salary)}</b> 台幣`);
+  /* 球迷留言：依這段生涯真正發生過的事挑選（見 FAN_DB） */
+  const fx=fanCtx(best,tiers);
+  const fans=pickFans(fx);
+  card('','網友評論',
+    fans.map(f=>`<div class="fan fan-c${f.c}"><span class="fan-tag">${FAN_CAT[f.c]}</span>「${f.t}」</div>`).join(''));
+  choose('',[{t:'↻ 再玩一次（新種子）',main:true,f:()=>{location.href=location.pathname;}},
+    {t:'↻ 同一顆種子重來',s:'相同開局，不同選擇',f:()=>{location.href=location.pathname+'?seed='+encodeURIComponent(SEED);}}]);
+}
+
+/* ============ 啟動 ============ */
+const APP_VER='v1.2';
+let selStyle='G';
+(function(){const v=$('ver-badge');if(v)v.textContent=APP_VER;
+  const tv=$('tag-ver');if(tv)tv.textContent=APP_VER;
+  const r=$('btn-restart');if(r)r.onclick=e=>{e.preventDefault();
+    const inGame=!!S&&!S.done;
+    if(!inGame||confirm('確定要放棄這段人生，從頭開始嗎？'))location.href=location.pathname;};})();
+$('seed-show').value=SEED;
+$('seed-re').onclick=e=>{e.preventDefault();SEED=Math.random().toString(36).slice(2,10);$('seed-show').value=SEED;};
+try{window.addEventListener('resize',()=>{if(S)syncBoardH();});}catch(e){}
+/* ---- 說明彈窗：ESC／點背景／關閉鈕都能關，關閉後焦點回到觸發按鈕 ---- */
+(function(){
+  const md=$('info-modal'),sc=$('info-scrim'),bt=$('btn-info'),cl=$('info-close');
+  if(!md||!bt)return;
+  let lastFocus=null;
+  const open=()=>{ lastFocus=document.activeElement;
+    md.hidden=false;sc.hidden=false;document.body.style.overflow='hidden';
+    md.querySelector('.im-body').scrollTop=0;cl.focus(); };
+  const close=()=>{ md.hidden=true;sc.hidden=true;document.body.style.overflow='';
+    /* 焦點必須回到可見元素；程式化 click 不會移動焦點，所以 lastFocus 可能是 body */
+    const back=(lastFocus&&lastFocus!==document.body&&lastFocus.offsetParent!==null)?lastFocus:bt;
+    if(back&&back.focus)back.focus(); };
+  bt.onclick=e=>{e.preventDefault();open();};
+  cl.onclick=close; sc.onclick=close;
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!md.hidden)close(); });
+})();
+document.querySelectorAll('#seg-style button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('#seg-style button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');selStyle=b.dataset.v;});
+$('btn-start').onclick=()=>{
+  const sv=$('seed-show').value.trim();if(sv)SEED=sv;
+  history.replaceState(null,'','?seed='+encodeURIComponent(SEED));
+  seedInit(SEED);
+  /* 隨機命名刻意不使用種子亂數：否則「有沒有打名字」會讓整條序列位移一格，
+     同一顆種子就生出不同的球員。名字純屬裝飾，用 Math.random 就好。 */
+  const nm=$('in-name').value.trim()||NAMES[Math.floor(Math.random()*NAMES.length)];
+  S=newState(nm,selStyle);
+  $('start').style.display='none';$('app').style.display='';
+  board(0);
+  card('info','球員誕生',`${S.year} 年夏天，<b class="hl">${S.name}</b> 十六歲，身高 <b class="hl">${S.hgt} 公分</b>，${GROUP[selStyle].n}。<div class="statline">${GROUP[selStyle].tree}<br>你會長到多高、最後分化成哪個位置，現在還沒有人知道。</div>`);
+  /* 高一：選學校（名門 vs 新興的取捨）；校名先抽好，避免點擊時才抽而擾動 RNG 序列 */
+  const o=ovr();
+  const names={1:pick(HS_T1),2:pick(HS_T2),3:pick(HS_T3)};
+  const opts2=[];
+  if(o>=26)opts2.push({t:`${names[1]}（HBL 名門）`,main:true,s:'三大賽 +6｜球權 ×0.75｜曝光 +10／年｜學長擋在前面',
+    f:()=>{S.tier=1;S.school=names[1];S.lv='HS_A';startHS();}});
+  opts2.push({t:`${names[2]}（HBL 中堅）`,s:'三大賽 ±0｜球權 ×1.00｜曝光 +6／年',
+    f:()=>{S.tier=2;S.school=names[2];S.lv='HS_A';startHS();}});
+  opts2.push({t:`${names[3]}（乙級升格新興）`,s:'三大賽 −6｜球權 ×1.30｜曝光 +2／年｜你是全隊唯一的答案',
+    f:()=>{S.tier=3;S.school=names[3];S.lv=o>=34?'HS_A':'HS_B';startHS();}});
+  choose('高中入學：三所學校都來找你',opts2);
+};
+function startHS(){
+  S.exp+=({1:10,2:6,3:2})[S.tier];
+  card('info','入學',`你成為 <b class="hl">${S.school}</b> 的一員（${LV[S.lv].n}）。${S.tier===1?'更衣室裡有三個學長是國手。':S.tier===3?'教練把球交到你手上：「這一季就靠你了。」':''}`);
+  board(0);startYear();
+}
+</script>
+</body>
+</html>
