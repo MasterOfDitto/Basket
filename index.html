@@ -386,6 +386,44 @@ footer.cr{color:var(--dim);font-size:11.5px;text-align:center;padding:14px 13px 
       <li><b>明星賽</b>：依 d 值抽選（〈社群巨星〉有保底）</li>
     </ul>
 
+    <h3>美國路線（NCAA）</h3>
+    <p><b class="dn">D1 不能直接入學。</b>台灣球員沒有美國高中學歷與 AAU 履歷，只能從預校／D3／D2 起步，靠<b>轉學市場（Transfer Portal）</b>一級一級往上爬：</p>
+    <div class="statline">美國預校／JUCO → NCAA D3 → NCAA D2 → NCAA D1 → G League → NBA</div>
+    <ul>
+      <li><b>入口</b>：高中畢業（綜合 ≥40）或大學休學。大學路口有兩條——<b>先讀預校</b>（多花一年，但是美國高中榮譽體系的唯一入口）或<b>直接進 NCAA</b>（省一年，沒有高中榮譽可拿）</li>
+      <li><b>年限</b>：NCAA 四年出賽資格，<b>轉學不會重置</b>；預校最多兩年，且不佔 NCAA 年限</li>
+      <li><b>被刷掉</b>：綜合低於該層級門檻會被降轉，教練不保證你的位置</li>
+      <li><b>離開</b>：宣布投入 NBA 選秀、轉戰 CBA、或返台加盟</li>
+    </ul>
+
+    <h3>招募星級評等（Star Ratings）</h3>
+    <p>赴美時由 247Sports／Rivals／ESPN／On3 給出評等，影響球權、明星賽入選與選秀行情：</p>
+    <table class="im-tab">
+      <tr><th>星級</th><th>全美排名</th><th>意義</th></tr>
+      <tr><td>★★★★★</td><td>前 30 名</td><td>頂級天才，NBA 首輪等級的天花板</td></tr>
+      <tr><td>★★★★</td><td>31~150 名</td><td>D1 強校的主力拼圖</td></tr>
+      <tr><td>★★★</td><td>151~300 名</td><td>有 D1 實力，但需要打滿三四年養成</td></tr>
+    </table>
+
+    <h3>高中三大頂級全明星賽</h3>
+    <ul>
+      <li><b>麥當勞全美明星賽</b>：全美應屆僅 24 人。Jordan、Kobe、LeBron、Durant 都打過（需就讀美國預校）</li>
+      <li><b>喬丹品牌經典賽</b>：Jordan Brand 主辦，20~24 人（需就讀美國預校）</li>
+      <li><b>耐吉巔峰賽</b>：美國高中隊 vs <b>世界新星隊</b>——Nowitzki、Jokić、Embiid 的成名戰。<b class="hl">台灣高中生本來就打得到這一場</b></li>
+    </ul>
+
+    <h3>全美年度個人大獎</h3>
+    <ul>
+      <li><b>佳得樂年度最佳高中球員</b>：看球場表現，也看學業與品德——<b class="dn">場外新聞被抓過就沒份</b></li>
+      <li><b>奈史密斯年度最佳高中球員</b>：名人堂委員會頒發，純看場上宰制力與數據（門檻最高）</li>
+      <li><b>Mr. Basketball USA</b>：全美媒體評委票選</li>
+      <li><b>AAU 夏季聯賽</b>：<b>Peach Jam MVP</b>／<b>Nike EYBL 第一隊</b>——大學教練親自球探的戰場，對手全是未來的 D1 星級球員，含金量常高於高中校隊數據</li>
+    </ul>
+
+    <h3>NBA 選秀</h3>
+    <p>兩輪 60 順位。行情＝綜合能力 ＋ 年齡潛力紅利 ＋ 曝光 ＋ 星級 ＋ 所在層級 ＋ 全美明星隊／Final Four 履歷；<b>25 歲之後行情逐年下滑</b>。</p>
+    <p><b class="dn">沒打出身價就是落選。</b>實測：資格一到就投選秀（預校／D3、零榮譽）→ 落選率 100%；打滿四年爬到 D1 並拿到全美明星隊 → 首輪機會出現，最高第 1 順位。落選後還有 G League 發展合約、回學校再打一年、CBA、返台四條路。</p>
+
     <h3>球員定位標籤</h3>
     <p>每季依能力與實際數據判定，直接顯示在記分板與結算：</p>
     <p><b>正評</b>：3D、空間型長人、跑吃型中鋒、禁區守護者、組織前鋒／中鋒、切入手、單打手、團隊黏著劑、微波爐、關鍵先生、鐵血保鏢、休息室老將。</p>
@@ -567,12 +605,17 @@ const LV={
  CBA_1:{n:'CBA 一隊',par:54,min:50,g:46,org:'CBA',top:'CBA'},
  /* col:1＝美國大學／預校層級。轉職業後不可能被下放回這裡（NCAA 是學生聯盟） */
  PREP:{n:'美國預校／JUCO',par:46,min:40,g:28,org:'US',sal:0,col:1},
+ NCAA3:{n:'NCAA D3',par:48,min:42,g:26,org:'US',sal:0,col:1},
  NCAA2:{n:'NCAA D2',par:50,min:44,g:30,org:'US',sal:0,col:1},
  NCAA1:{n:'NCAA D1',par:54,min:48,g:32,org:'US',col:1},
  GL:{n:'G League',par:56,min:50,g:50,org:'US',sal:200},
  NBA:{n:'NBA',par:60,min:54,g:82,org:'US',top:'NBA'}
 };
-const PATHS={TW:['TW_D','TW_1'],CBA:['CBA_Y','CBA_1'],US:['PREP','NCAA2','NCAA1','GL','NBA']};
+/* 美國階梯：台灣球員沒有 NCAA 認證學歷與 AAU 履歷，D1 的門是關著的——
+   只能從預校／D3／D2 起步，靠轉學市場（Transfer Portal）一級一級往上爬。 */
+const PATHS={TW:['TW_D','TW_1'],CBA:['CBA_Y','CBA_1'],US:['PREP','NCAA3','NCAA2','NCAA1','GL','NBA']};
+const NCAA_D3=['小城文理','湖畔學院','橡樹州立','北岸工學院'];
+const NCAA_D2=['中部州大','海岸州立','谷地大學','鐵城科大'];
 const LGN={TW:'台灣職籃',CBA:'CBA',NBA:'NBA'};
 const TW_TEAMS=['新北君王','桃園靈猿','台北勇將','府城獵鷹','港都海神','中臺夢想'];
 const CBA_TEAMS=['遼東雄獅','南粵猛虎','天山飛鷹','錢江雙龍','申城巨鯊','京城鋼鐵','鵬城領航','齊魯高塔','珠江龍舟','琅琊雙星','江南鐵騎','長白猛虎','蜀道熊貓','晉城汾龍','津門金剛','閩海潮汐','京北衛戍','姑蘇大聖','甬江海豹','北疆農商'];
@@ -635,7 +678,9 @@ function newState(name,style){
   const ab={}; AKEYS.forEach(k=>ab[k]=ri(20,30));
   const g=GROUP[style]; for(const k in g.bias)ab[k]+=g.bias[k];
   const pot={}, sh=shuffle(AKEYS.slice());
-  sh.forEach((k,i)=>{ pot[k]= i===0?ri(72,80) : i===1?ri(64,74) : i===2?ri(56,68) : ri(46,62); });
+  /* 天賦上限：四個級距各 +8（2026-08-14）。原本十項裡只有 1.9 項練得到上限，
+     多出來的點數會溢出成當季數據加成把場均灌爆；提高上限讓點數真的變成能力。 */
+  sh.forEach((k,i)=>{ pot[k]=Math.min(80,(i===0?ri(72,80):i===1?ri(64,74):i===2?ri(56,68):ri(46,62))+8); });
   /* 成年身高依位置群抽（後衛矮、中鋒高），16 歲時還沒長完 */
   const hgtMax=Math.round(clamp(g.hgt[0]+N0(g.hgt[1]),166,216));
   const hgt=Math.max(158,hgtMax-ri(0,12));
@@ -667,7 +712,10 @@ function isAma(){return !!L().ama;}
 function bucket(){return L().top||null;}
 function teamsOf(org){return org==='TW'?TW_TEAMS:org==='CBA'?CBA_TEAMS:US_TEAMS;}
 /* 該層級該用哪個隊名池：美國大學層級用校名，其餘用職業隊名 */
-function poolOf(){return (S.org==='US'&&L().col)?NCAA_SCHOOLS:teamsOf(S.org);}
+function poolOf(){
+  if(S.org!=='US'||!L().col)return teamsOf(S.org);
+  return S.lv==='NCAA3'?NCAA_D3:S.lv==='NCAA2'?NCAA_D2:NCAA_SCHOOLS;   /* D1／預校用名校池 */
+}
 /* 升／降級跨越「大學↔職業」時，隊名必須重抽——否則會出現「NBA 杜克藍魔」這種東西。
    同性質層級之間（NBA↔G League、D1↔D2）隊名池相同，不重抽也不耗亂數。 */
 function fixTeam(){
@@ -1274,8 +1322,16 @@ function phasePre(){
       {t:'提前投入台灣職籃選秀',s:`綜合 ${o}｜曝光 ${Math.round(S.exp)}｜放棄剩餘學生資格`,f:()=>runDraft(true,roll)}];
     if(o>=44&&chance(60))opts.push({t:'休學赴 CBA 青年隊',s:'高薪，但要在陌生城市從頭證明',
       f:()=>{S.stage='PRO';signTo('CBA','CBA_Y',null,ri(2,3),1);roll();}});
-    if(o>=46)opts.push({t:'休學赴美（預校／JUCO）',s:'走五級階梯挑戰 NBA',
-      f:()=>{S.stage='PRO';signTo('US',o>=50?'NCAA2':'PREP',null,3,1);roll();}});
+    /* 大學 → NCAA 兩條路的取捨：走預校多花一年，但那是美國高中榮譽體系的唯一入口 */
+    if(o>=40)opts.push({t:'休學赴美・先讀預校',
+      s:'麥當勞明星賽・喬丹經典賽・AAU・全美年度大獎的唯一入口｜多花一年，不佔 NCAA 四年資格',
+      f:()=>{S.stage='PRO';
+        starEval('你選了最慢但最有名氣的一條路——先當一年美國高中生。');
+        signTo('US','PREP',null,3,1);roll();}});
+    if(o>=44)opts.push({t:'休學赴美・直接進 NCAA',s:`從 ${o>=50?'D2':'D3'} 起步｜省一年，但沒有高中榮譽可拿`,
+      f:()=>{S.stage='PRO';
+        starEval('你不想再等了，直接飛過去讓 NCAA 的教練親眼看。');
+        signTo('US',o>=50?'NCAA2':'NCAA3',null,3,1);roll();}});
     choose(`大${['一','二','三','四'][S.stageYr-1]}季前 · 十字路口`,opts);
     return;
   }
@@ -1528,7 +1584,90 @@ function kneeGamble(cont){
         cont();}}}]);
 }
 
-/* ---- 業餘賽季（HBL／UBA／社會甲組）---- */
+/* ============ 美國招募體系 ============
+   星級評等（247Sports／Rivals／ESPN／On3 綜合）、高中三大明星賽、全美年度個人大獎、AAU 夏季聯賽。
+   台灣球員以「國際生」身分被評等；麥當勞／JBC／AAU 需要就讀美國預校才進得了名單，
+   耐吉巔峰賽因為分「美國隊 vs 世界新星隊」，台灣高中生本來就打得到（Jokić、Embiid 都是這樣被看見的）。*/
+function starEval(why){
+  const o=ovr(),ex=Math.round(S.exp);
+  const sc=o+ex*0.20+S.honors.length*1.6+(S.traits.viral?6:0)+(S.traits.legend?8:0)+ri(-3,3);
+  const st=sc>=74?5:sc>=62?4:3;
+  S.stars=Math.max(S.stars||0,st);
+  const rk=st===5?'全美前 30 名':st===4?'全美 31~150 名':'全美 151~300 名';
+  const site=pick(['247Sports','Rivals','ESPN','On3']);
+  const exg=st===5?20:st===4?11:4;S.exp+=exg;
+  card(st>=5?'gold':'good','招募星級評等 '+'★'.repeat(st),
+    (why||'')+'<b class="hl">'+site+'</b> 把你放進招募資料庫：<b class="hl">'+st+' 星</b>（'+rk+'）。'
+    +'<div class="statline">曝光 <b class="hl">+'+exg+'</b>｜星級影響球權、明星賽入選與選秀行情'
+    +'<br>⚠️ 沒有美國高中學歷與 AAU 履歷，<b class="dn">D1 無法直接入學</b>——只能從預校／D3／D2 打起。</div>');
+  return st;
+}
+/* 高中頂級全明星賽 */
+const HS_SHOW=[
+ {k:'mcd',n:'麥當勞全美明星賽',need:'PREP',th:48,exp:26,pt:5,
+  s:'全美應屆畢業生僅 24 人入選（東西區各 12 人）',
+  d:'高中籃球界的最高殿堂。Jordan、Kobe、LeBron、Durant 高中時都打過這場比賽。'},
+ {k:'jbc',n:'喬丹品牌經典賽',need:'PREP',th:45,exp:18,pt:4,
+  s:'Jordan Brand 主辦，全美 20~24 人',
+  d:'重要性僅次於麥當勞明星賽，潮流感與商業曝光度極高。'},
+ {k:'hoop',n:'耐吉巔峰賽（世界新星隊）',need:'ANY',th:42,exp:22,pt:4,
+  s:'美國高中頂級隊 vs 世界新星隊',
+  d:'國際級的世仇對決。Nowitzki、Jokić、Embiid 都是在這場比賽一戰成名。'}
+];
+/* 全美年度個人大獎（同年最多拿一座；佳得樂看品德，被抓過場外新聞就沒份） */
+const HS_POY=[
+ {k:'gato',n:'佳得樂年度最佳高中球員',th:49,exp:30,pt:6,clean:1,
+  d:'不只看球場表現，還看學業成績與品德社交貢獻——美國社會評價最高的綜合榮譽。'},
+ {k:'nais',n:'奈史密斯年度最佳高中球員',th:50,exp:26,pt:6,
+  d:'由名人堂委員會頒發，純粹以場上的宰制力與數據為唯一標準。'},
+ {k:'mrbb',n:'Mr. Basketball USA',th:48,exp:24,pt:5,
+  d:'全美媒體評委會票選出的最佳高中球員。'}
+];
+/* AAU 夏季聯賽：大學教練親自到場球探的關鍵戰場 */
+const AAU_AW=[
+ {k:'pjmvp',n:'Peach Jam MVP',th:47,exp:28,pt:6,
+  d:'Nike EYBL 夏季聯賽的最高殿堂。這裡每場對手都是未來的 D1 星級球員，含金量比在高中校隊刷數據更高。'},
+ {k:'eybl1',n:'Nike EYBL 第一隊',th:43,exp:16,pt:4,
+  d:'夏天巡迴賽打出來的名聲，往往比校隊數據更能決定你的招募排名。'}
+];
+function showAward(g,tag){
+  S.showed[g.k]=1;S.honors.push(S.year+' '+g.n);S.exp+=g.exp;S.pool+=g.pt;
+  card('gold',tag+'：'+g.n,g.d+'<div class="statline">'+(g.s?g.s+'｜':'')
+    +'曝光 <b class="hl">+'+g.exp+'</b>｜能力點 <b class="hl">+'+g.pt+'</b></div>');
+}
+function hsShowcase(){
+  if(S.seasonFactor<=0)return;
+  if(S.age>(S.lv==='PREP'?20:19))return;   /* 預校＝高中畢業後那一年，窗口多給一歲 */
+  const inPrep=(S.lv==='PREP'), inHS=(S.stage==='HS');
+  if(!inPrep&&!inHS)return;
+  S.showed=S.showed||{};
+  /* 評定基準＝絕對綜合能力值（＋星級加成）：這些榮譽是跟全美同屆高中生比 */
+  const rec=ovr()+((S.stars||0)>=5?6:(S.stars||0)>=4?3:0);
+  HS_SHOW.forEach(g=>{
+    if(S.showed[g.k])return;
+    if(g.need==='PREP'&&!inPrep)return;
+    if(rec>=g.th&&chance(clamp(40+(rec-g.th)*9,28,88)))showAward(g,'入選');
+  });
+  if(!inPrep)return;                        /* 以下三類只有在美國高中體系裡才算得到 */
+  AAU_AW.forEach(g=>{ if(!S.showed[g.k]&&rec>=g.th&&chance(clamp(34+(rec-g.th)*8,24,82)))showAward(g,'AAU 夏季聯賽'); });
+  if(S.age>=18&&!S.poyYear){
+    for(const g of HS_POY){
+      if(S.showed[g.k])continue;
+      if(g.clean&&((S.love&&S.love.caught)||S.traits.cancer))continue;
+      if(rec>=g.th&&chance(clamp(26+(rec-g.th)*8,18,72))){showAward(g,'全美年度大獎');S.poyYear=S.year;break;}
+    }
+  }
+}
+/* NCAA 賽季榮譽：讓「打出身價」這件事有具體依據 */
+function ncaaHonors(st){
+  S.showed=S.showed||{};
+  const dom=st.d, d1=(S.lv==='NCAA1');
+  if(dom>=3&&chance(d1?58:34)){const t=dom>=8?'第一隊':'第二隊';
+    S.honors.push(S.year+' NCAA 全美'+t);S.exp+=t==='第一隊'?24:14;
+    card('gold','NCAA 全美明星隊','入選 <b class="hl">全美'+t+'</b>（All-American）。<div class="statline">選秀行情大幅提升</div>');}
+  if(d1&&dom>=3&&chance(26)){S.honors.push(S.year+' NCAA 錦標賽四強');S.exp+=20;
+    card('gold','三月瘋（March Madness）','你把學校帶進 <b class="hl">Final Four</b>。全美的球探都在看這四場比賽。');}
+}
 function amaSeason(){
   if(S.seasonFactor===0){card('bad','','整季只能在場邊看隊友比賽。');
     S.log.push({y:S.year,age:S.age,tm:S.school||LV[S.lv].n,line:'傷缺全季',inj:true});
@@ -1560,6 +1699,7 @@ function amaSeason(){
       card('gold','個人獎項',`${aw} <b class="hl">${w}</b>！`);}
   });
   S.pool+=gain;S.exp+=exp;
+  hsShowcase();   /* 台灣高中生也打得到耐吉巔峰賽（世界新星隊） */
   S.log.push({y:S.year,age:S.age,tm:S.school||LV[S.lv].n,line:plain.join('、'),inj:false});
   card('','年度賽事',lines.join('<br>')+`<div class="statline">能力點 ${gain} 點於季末分配｜球權係數 ×${usage}（${S.stage==='HS'?['','名門板凳','中堅主力','新興核心'][S.tier]:'主力'}）</div>`);
   maybeIntl(()=>nextStep());
@@ -1599,6 +1739,7 @@ function proSeason(){
   if(!S.traits.hog&&S.role==='A'&&st.d<0&&S.prevD<0&&bucket())
     trait('hog','球到你手上就不會再傳出來，數據漂亮但球隊贏不了——<b class="dn">教練信任下降、報價變少</b>。',1);
   awards(st);
+  if(L().col){ if(S.lv==='PREP')hsShowcase(); else ncaaHonors(st); }
   kneeAccrue();
   kneeGamble(()=>maybeIntl(()=>nextStep()));
 }
@@ -1823,6 +1964,7 @@ function movement(){
   afterMove(o);
 }
 function afterMove(o){
+  if(S.org==='US'&&L().col){collegeCross(o);return;}   /* 美國大學另走一條路口 */
   if(S.org==='CBA')S.cbaYears++;
   /* 交易：每年獨立檢查（毒瘤／獨食者更容易被送走） */
   if(bucket()&&S.teamYears>=1&&chance(9+(S.traits.cancer?18:0)+(S.traits.hog?10:0))){
@@ -1857,6 +1999,87 @@ function afterMove(o){
     return;
   }
   afterMove2(o);
+}
+/* 美國大學每年的路口：留校養成、投入轉學市場往上爬、或宣布投入 NBA 選秀。
+   NCAA 資格四年用完就一定要離開學校。 */
+function collegeCross(o){
+  const inPrep=(S.lv==='PREP');
+  if(inPrep)S.prepYears=(S.prepYears||0)+1; else S.colYears=(S.colYears||0)+1;
+  const path=PATHS.US, idx=path.indexOf(S.lv);
+  const nx=path[idx+1];
+  /* NCAA 只有四年出賽資格，轉學不會重置；預校不算 NCAA 年限但最多待兩年 */
+  const exhausted=inPrep?(S.prepYears||0)>=2:(S.colYears||0)>=4;
+  const canUp=nx&&LV[nx].col&&o>=LV[nx].min&&!exhausted;
+  const washout=o<L().min;
+  const eligible=S.age>=19&&((S.colYears||0)+(S.prepYears||0))>=1;   /* 在美國體系打滿一年才有選秀資格 */
+  const opts=[];
+  if(washout&&idx>0&&LV[path[idx-1]].col){
+    const dn=path[idx-1];
+    card('bad','獎學金評估','教練把你叫進辦公室：「明年我不能保證你的位置。」');
+    opts.push({t:'降轉 '+LV[dn].n,main:true,s:'球權變大，履歷變薄',
+      f:()=>{S.lv=dn;fixTeam();card('info','降轉','你收拾行李轉到 <b class="hl">'+S.team+'</b>。');board(2);advance();}});
+  }else if(!exhausted){
+    opts.push({t:'留校再拚一年',main:!canUp,s:LV[S.lv].n+'｜第 '+(S.colYears+1)+' 年'+(canUp?'':'｜再累積數據與曝光'),f:()=>advance()});
+  }
+  if(canUp)opts.push({t:'投入轉學市場，轉到 '+LV[nx].n,main:true,
+    s:'Transfer Portal｜層級更高但球權要重新競爭',
+    f:()=>{S.lv=nx;fixTeam();S.exp+=8;
+      card('gold','轉學成功','你把名字放進轉學市場，<b class="hl">'+S.team+'</b> 的助理教練當天就打電話來——'+LV[nx].n+'。<div class="statline">曝光 <b class="hl">+8</b></div>');
+      board(2);advance();}});
+  if(eligible)opts.push({t:'宣布投入 NBA 選秀',s:draftHint(o),f:()=>nbaDraft(o)});
+  if(o>=LV.CBA_1.min)opts.push({t:'放棄學業，轉戰 CBA',s:'高薪、高球權、零容錯',
+    f:()=>{signTo('CBA','CBA_1',null,ri(2,3),1);advance();}});
+  opts.push({t:'返台加盟台灣職籃',s:o>=LV.TW_1.min?'一隊名單':'培訓名單',
+    f:()=>{signTo('TW',o>=LV.TW_1.min?'TW_1':'TW_D');advance();}});
+  if(exhausted&&!washout)card('info',inPrep?'預校年限用盡':'NCAA 資格用盡',
+    inPrep?'預校只能待兩年。你必須決定下一站了。':'四年出賽資格打完，你不能再穿大學的球衣了。');
+  choose(LV[S.lv].n+' 第 '+(inPrep?S.prepYears:S.colYears)+' 年結束 · 綜合 '+o+'・曝光 '+Math.round(S.exp),opts);
+}
+function draftScore(o){
+  const lvB={NCAA1:6,NCAA2:1,NCAA3:-3,PREP:-8}[S.lv]||0;
+  const aa=S.honors.filter(h=>h.includes('全美第一隊')).length*7
+          +S.honors.filter(h=>h.includes('全美第二隊')).length*3.5
+          +S.honors.filter(h=>h.includes('四強')).length*3;
+  const young=Math.max(0,23-S.age)*2.2;      /* 潛力紅利 */
+  const old=Math.max(0,S.age-24)*3;          /* 25 歲後行情快速下滑（國際球員的現實） */
+  return Math.round((o-52)*3.2+young-old+Math.min(240,S.exp)*0.045
+    +((S.stars||0)>=5?9:(S.stars||0)>=4?4:0)+lvB+aa);
+}
+function draftHint(o){
+  const sc=draftScore(o);
+  return '目前行情 '+(sc>=68?'樂透區':sc>=58?'第 1 輪中段':sc>=48?'第 1 輪末段':sc>=40?'第 2 輪':sc>=34?'第 2 輪末段':'落選邊緣')
+    +'（評價 '+sc+'）';
+}
+/* NBA 選秀：兩輪 60 順位。沒打出身價就是落選——那才是絕大多數國際球員的結局。 */
+function nbaDraft(o){
+  const sc=draftScore(o)+ri(-5,5);
+  let pk=0;
+  if(sc>=68)pk=ri(1,5); else if(sc>=58)pk=ri(6,14); else if(sc>=48)pk=ri(15,30);
+  else if(sc>=40)pk=ri(31,45); else if(sc>=34)pk=ri(46,60);
+  if(!pk){
+    card('bad','選秀落選','六十個名字唱完，沒有你。經紀人在電話那頭沉默了很久，然後說：「還有別的路。」'
+      +'<div class="statline">評價 '+sc+'｜綜合 '+o+'・曝光 '+Math.round(S.exp)+'</div>');
+    const opts=[];
+    if(o>=LV.GL.min)opts.push({t:'簽 G League 發展合約',main:true,s:'距離最近的一步，但薪水很薄',
+      f:()=>{signTo('US','GL',null,2,1);advance();}});
+    if((S.lv==='PREP'?(S.prepYears||0)<2:(S.colYears||0)<4))
+      opts.push({t:'回學校再打一年',s:'明年重新投入選秀',f:()=>advance()});
+    if(o>=LV.CBA_1.min)opts.push({t:'轉戰 CBA',f:()=>{signTo('CBA','CBA_1',null,ri(2,3),1);advance();}});
+    opts.push({t:'返台加盟台灣職籃',main:!opts.length,f:()=>{signTo('TW',o>=LV.TW_1.min?'TW_1':'TW_D');advance();}});
+    choose('落選之後',opts);return;
+  }
+  const rd=pk<=30?1:2;
+  const bonus=pk<=5?12000:pk<=14?7000:pk<=30?3500:pk<=45?1500:600;
+  const lv=(pk<=30||o>=LV.NBA.min)?'NBA':'GL';
+  const team=pick(US_TEAMS);
+  S.honors.push(S.year+' NBA 選秀第 '+pk+' 順位');
+  S.salary+=bonus;S.svc=0;S.faElig=false;S.exp+=pk<=14?26:pk<=30?16:8;
+  signTo('US',lv,team,rd===1?3:2,1);
+  card('gold','NBA 選秀會',
+    '<b class="hl">第 '+rd+' 輪第 '+pk+' 順位</b>，<b class="hl">'+team+'</b> 選擇了你。'
+    +'<div class="statline">簽約金 <b class="hl">'+fmtM(bonus)+'</b>｜'
+    +(lv==='NBA'?'直接進入輪替名單':'先下放 G League 磨練')+'｜評價 '+sc+'</div>');
+  board(0);advance();
 }
 function afterMove2(o){
   if(bucket()){S.svc++;if(S.svc>=3)S.faElig=true;
@@ -2062,8 +2285,10 @@ function pathHS(){
     else advance();})});
   if(o>=42)opts.push({t:'赴 CBA 青年隊',s:'從陌生的城市開始，薪水是台灣的好幾倍',
     f:()=>{signTo('CBA','CBA_Y',null,3,1);advance();}});
-  if(o>=44)opts.push({t:'赴美（預校／JUCO）',s:`走五級階梯挑戰 NBA${o>=48?'（可直接從 NCAA D2 起跳）':''}`,
-    f:()=>{signTo('US',o>=48?'NCAA2':'PREP',null,3,1);advance();}});
+  /* 門檻由 44 下修為 40：實測高中畢業 ovr 中位 34、最高 40，44 是永遠看不到的死選項 */
+  if(o>=40)opts.push({t:'高中畢業直接赴美',s:`從 ${o>=52?'D2':o>=46?'D3':'美國預校'} 起步｜D1 只能靠轉學進去`,
+    f:()=>{starEval('十八歲就飛過去，美國的招募網站給了亞洲人一個少見的評等。');
+      signTo('US',o>=52?'NCAA2':o>=46?'NCAA3':'PREP',null,3,1);advance();}});
   choose(`高中畢業 · 綜合 ${o}・曝光 ${ex} · 人生第一個路口`,opts);
 }
 function pathU(){
@@ -2074,7 +2299,9 @@ function pathU(){
       {t:'高掛球鞋',warn:true,f:()=>endGame('大學畢業選秀落榜，決定告別球場。')}]);
     else advance();})}];
   if(o>=44)opts.push({t:'赴 CBA',s:'亞洲外援合約',f:()=>{signTo('CBA',o>=50?'CBA_1':'CBA_Y',null,ri(2,3),1);advance();}});
-  if(o>=48)opts.push({t:'赴美',s:'從 NCAA／G League 起跳',f:()=>{signTo('US',o>=52?'GL':'NCAA1',null,3,1);advance();}});
+  if(o>=48)opts.push({t:'赴美挑戰 NCAA',s:'D2／D3 起步，或直接投 G League',
+    f:()=>{starEval('大學畢業後才動身，年齡對招募排名不利。');
+      signTo('US',o>=54?'GL':o>=50?'NCAA2':'NCAA3',null,3,1);advance();}});
   choose(`大學畢業 · 綜合 ${o}`,opts);
 }
 
@@ -2352,7 +2579,7 @@ function endGame(reason){
 }
 
 /* ============ 啟動 ============ */
-const APP_VER='v1.4';
+const APP_VER='v1.5';
 let selStyle='G';
 (function(){const v=$('ver-badge');if(v)v.textContent=APP_VER;
   const tv=$('tag-ver');if(tv)tv.textContent=APP_VER;
