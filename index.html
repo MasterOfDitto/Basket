@@ -300,7 +300,7 @@ footer.cr{color:var(--dim);font-size:11.5px;text-align:center;padding:14px 13px 
   <label id="lb-pos">起始位置群（之後依能力分化，還能再進化）</label>
   <div class="seg seg-pos" id="seg-style" role="radiogroup" aria-labelledby="lb-pos">
     <button data-v="G" class="on" role="radio" aria-checked="true">
-      <b>後衛</b><small>控球／視野／三分</small>
+      <b>後衛</b><small>控球／視野／三分／IQ</small>
       <span class="tree">控球後衛／得分後衛 <i>→</i> 雙能衛</span>
       <span class="diff diff-3">養成難度 高</span></button>
     <button data-v="F" role="radio" aria-checked="false">
@@ -341,14 +341,14 @@ footer.cr{color:var(--dim);font-size:11.5px;text-align:center;padding:14px 13px 
 
     <h3>分化規則（進職業後每季重新判定）</h3>
     <ul>
-      <li><b>後衛</b>：控球＋視野 ≥ 三分＋切入 → 控球後衛，否則得分後衛</li>
+      <li><b>後衛</b>：控球＋視野 ≥ 三分＋中距離 → 控球後衛，否則得分後衛（兩者都另外要求籃球 IQ 達標）</li>
       <li><b>前鋒</b>：三分＋單防 ≥ 籃板＋彈跳 → 小前鋒，否則大前鋒</li>
       <li><b>中鋒</b>：不分化。門檻是全部位置裡最低的（籃板／彈跳／單防）</li>
     </ul>
 
     <h3>進化條件</h3>
     <ul>
-      <li><b>雙能衛</b>：需先站上控球後衛，且控球、視野、三分同時達標。薪資係數 ×1.16（最高）、上場分鐘 +2</li>
+      <li><b>雙能衛</b>：需先站上控球後衛，且控球、視野、三分、籃球 IQ 同時達標。薪資係數 ×1.16（最高）、上場分鐘 +2</li>
       <li><b>全能鋒線</b>：需先站上小前鋒，且三分、單防、籃板、彈跳同時達標。薪資係數 ×1.14、上場分鐘 +2</li>
     </ul>
 
@@ -356,8 +356,8 @@ footer.cr{color:var(--dim);font-size:11.5px;text-align:center;padding:14px 13px 
     <p>重點＝<b>你現在這個位置需要的能力</b> ＋ <b>你還走得到的下一階需要的能力</b>。所以位置一變，重點就跟著變：</p>
     <table class="im-tab">
       <tr><th>你的狀態</th><th>標註的重點</th></tr>
-      <tr><td>還沒分化（高中／大學）</td><td>該群兩條路的能力都算（後衛：控球・視野・三分・切入）</td></tr>
-      <tr><td>已分化到得分後衛／大前鋒</td><td>只剩該位置吃重的（得分後衛：三分・切入）</td></tr>
+      <tr><td>還沒分化（高中／大學）</td><td>該群兩條路的能力都算（後衛：控球・視野・三分・IQ）</td></tr>
+      <tr><td>已分化到得分後衛／大前鋒</td><td>只剩該位置吃重的（得分後衛：三分・IQ）</td></tr>
       <tr><td>站在控球後衛／小前鋒</td><td>該位置 ＋ 進化所需（雙能衛／全能鋒線）</td></tr>
       <tr><td>已進化或中鋒</td><td>該位置自己的能力</td></tr>
     </table>
@@ -457,8 +457,8 @@ const AKEYS=Object.keys(ABL);
          └─ 大前鋒
    中鋒 ─── 中鋒（門檻最低，養成最容易）                             */
 const GROUP={
-  G:{n:'後衛',bias:{hdl:6,pas:5,tre:3},hgt:[181,5],
-     tree:'控球後衛／得分後衛 → 雙能衛',diff:'養成難度：高（要控球、視野、外線三頭燒）'},
+  G:{n:'後衛',bias:{hdl:6,pas:5,tre:3,iq:3},hgt:[181,5],
+     tree:'控球後衛／得分後衛 → 雙能衛',diff:'養成難度：高（控球、視野、三分、IQ 四項都要顧）'},
   F:{n:'前鋒',bias:{fin:5,tre:3,def:3,jmp:2},hgt:[194,5],
      tree:'小前鋒／大前鋒 → 全能鋒線',diff:'養成難度：中（三分與籃板要兼顧）'},
   C:{n:'中鋒',bias:{reb:6,jmp:4,def:3},hgt:[204,5],
@@ -469,8 +469,9 @@ const POSN={G:'後衛',F:'前鋒',PG:'控球後衛',SG:'得分後衛',CG:'雙能
 const POS_SHORT={G:'G',F:'F',PG:'PG',SG:'SG',CG:'CG',SF:'SF',PF:'PF',AF:'AF',C:'C'};
 /* 門檻＝相對聯盟基準 B 的位移。中鋒最低（養成最簡單）；雙能衛／全能鋒線最高（進化位置） */
 const POS_REQ={
-  PG:{hdl:2,pas:2},       SG:{tre:2,fin:1},
-  CG:{hdl:4,pas:2,tre:2},                 /* 進化：控球底子 ＋ 得分手段 */
+  /* 後衛體系四大能力＝控球・視野・三分・籃球IQ（不吃切入終結） */
+  PG:{hdl:2,pas:2,iq:1},  SG:{tre:2,iq:1},
+  CG:{hdl:4,pas:2,tre:2,iq:1},             /* 進化：控球底子 ＋ 外線 ＋ 讀球能力 */
   SF:{tre:1,def:1},       PF:{reb:2,def:1},
   AF:{tre:1,def:1,reb:2,jmp:1},           /* 進化：大小前鋒都吃得下 */
   C:{reb:0,jmp:-2,def:-1}                 /* 中鋒：門檻最低 */
@@ -564,9 +565,10 @@ const LV={
  TW_1:{n:'台灣職籃一隊',par:50,min:44,g:36,org:'TW',top:'TW'},
  CBA_Y:{n:'CBA 青年隊',par:52,min:46,g:40,org:'CBA',sal:400},
  CBA_1:{n:'CBA 一隊',par:54,min:50,g:46,org:'CBA',top:'CBA'},
- PREP:{n:'美國預校／JUCO',par:46,min:40,g:28,org:'US',sal:0},
- NCAA2:{n:'NCAA D2',par:50,min:44,g:30,org:'US',sal:0},
- NCAA1:{n:'NCAA D1',par:54,min:48,g:32,org:'US'},
+ /* col:1＝美國大學／預校層級。轉職業後不可能被下放回這裡（NCAA 是學生聯盟） */
+ PREP:{n:'美國預校／JUCO',par:46,min:40,g:28,org:'US',sal:0,col:1},
+ NCAA2:{n:'NCAA D2',par:50,min:44,g:30,org:'US',sal:0,col:1},
+ NCAA1:{n:'NCAA D1',par:54,min:48,g:32,org:'US',col:1},
  GL:{n:'G League',par:56,min:50,g:50,org:'US',sal:200},
  NBA:{n:'NBA',par:60,min:54,g:82,org:'US',top:'NBA'}
 };
@@ -664,6 +666,17 @@ function L(){return LV[S.lv];}
 function isAma(){return !!L().ama;}
 function bucket(){return L().top||null;}
 function teamsOf(org){return org==='TW'?TW_TEAMS:org==='CBA'?CBA_TEAMS:US_TEAMS;}
+/* 該層級該用哪個隊名池：美國大學層級用校名，其餘用職業隊名 */
+function poolOf(){return (S.org==='US'&&L().col)?NCAA_SCHOOLS:teamsOf(S.org);}
+/* 升／降級跨越「大學↔職業」時，隊名必須重抽——否則會出現「NBA 杜克藍魔」這種東西。
+   同性質層級之間（NBA↔G League、D1↔D2）隊名池相同，不重抽也不耗亂數。 */
+function fixTeam(){
+  const pool=poolOf();
+  if(S.team&&pool.includes(S.team))return null;
+  const nt=pick(pool);
+  S.team=nt;S.teamYears=0;S.champ=false;S.champTeam=null;
+  return nt;
+}
 
 /* ============ 評價 ============ */
 function scoreOf(){const a=S.ab;const arr=[a.mid,a.tre,a.fin].sort((x,y)=>y-x);
@@ -748,7 +761,8 @@ function subPos(){
   if(S.group==='C')return 'C';
   if(S.group==='G'){
     if((S.pos==='PG'||S.pos==='CG')&&posFit('CG')>=0)return 'CG';
-    const ball=a.hdl+a.pas, score=a.tre+a.fin;
+    /* 組織型 vs 得分型：後衛不吃切入終結，得分側改看三分＋中距離 */
+    const ball=a.hdl+a.pas, score=a.tre+a.mid;
     return (ball>=score-2&&posFit('PG')>=0)?'PG':'SG';
   }
   if((S.pos==='SF'||S.pos==='AF')&&posFit('AF')>=0)return 'AF';
@@ -1871,7 +1885,8 @@ function afterMove2(o){
       let to=nx;
       if(idx<path.length-2){const n2=path[idx+2];if(o>=LV[n2].min+2&&S.lastD>=4)to=n2;}
       S.lv=to;S.role=roleOf();
-      card('good','升級通知',`表現獲得肯定，${to!==nx?'<b class="hl">連跳兩級</b>':'晉升'} <b class="hl">${LV[to].n}</b>！`);
+      const ntUp=fixTeam();   /* 例：NCAA D1 → NBA，隊名要從校名換成職業隊 */
+      card('good','升級通知',`表現獲得肯定，${to!==nx?'<b class="hl">連跳兩級</b>':'晉升'} <b class="hl">${LV[to].n}</b>！${ntUp?`你與 <b class="hl">${ntUp}</b> 簽下合約。`:''}`);
       checkMile();
       if(S.traits.yips){untrait('yips');card('good','走出陰影','重回上一層舞台，節奏找回來了。');}
       board(2);}}
@@ -1904,7 +1919,12 @@ function militaryService(cont){
 function demote(o,path,idx){
   if(bucket()&&S.lastD<=-8&&S.age<32&&!S.traits.yips&&S.seasonFactor>=0.5)
     trait('yips','站上罰球線的瞬間，腦海全是上季被爆的畫面——<b class="dn">系統評價 −3，直到再升級或奪獎才解除</b>。',1);
-  let t=-1;for(let i=idx-1;i>=0;i--){if(o>=LV[path[i]].min){t=i;break;}}
+  /* 下放只能往同性質的層級走：已經是職業球員（G League／NBA）不可能被丟回 NCAA 或預校，
+     找不到可去的職業層級就走「戰力外」流程（改投 CBA／台灣職籃，或引退）。 */
+  const nowCol=!!LV[path[idx]].col;
+  let t=-1;for(let i=idx-1;i>=0;i--){
+    if(!nowCol&&LV[path[i]].col)continue;
+    if(o>=LV[path[i]].min){t=i;break;}}
   const alts=[];
   if(S.org==='US'){
     if(o>=LV.CBA_1.min&&chance(Math.round(70*gateCBA())))alts.push({t:'轉戰 CBA 一隊',s:'高薪、高球權、零容錯',f:()=>{signTo('CBA','CBA_1');advance();}});
@@ -1913,8 +1933,8 @@ function demote(o,path,idx){
   if(t>=0){
     if(alts.length){
       card('bad','降級通知',`成績未達標，球團打算把你放到 <b class="dn">${LV[path[t]].n}</b>——但其他聯盟的邀請也到了。`);
-      choose('接受下放，還是換個舞台？',[{t:'接受下放 '+LV[path[t]].n,main:true,f:()=>{S.lv=path[t];S.role=roleOf();board(2);advance();}},...alts]);
-    }else{S.lv=path[t];S.role=roleOf();card('bad','降級通知',`成績未達標，被下放至 <b class="dn">${LV[path[t]].n}</b>。`);board(2);advance();}
+      choose('接受下放，還是換個舞台？',[{t:'接受下放 '+LV[path[t]].n,main:true,f:()=>{S.lv=path[t];S.role=roleOf();fixTeam();board(2);advance();}},...alts]);
+    }else{S.lv=path[t];S.role=roleOf();fixTeam();card('bad','降級通知',`成績未達標，被下放至 <b class="dn">${LV[path[t]].n}</b>。`);board(2);advance();}
     return;}
   outOfOrg(o);
 }
@@ -2332,7 +2352,7 @@ function endGame(reason){
 }
 
 /* ============ 啟動 ============ */
-const APP_VER='v1.3';
+const APP_VER='v1.4';
 let selStyle='G';
 (function(){const v=$('ver-badge');if(v)v.textContent=APP_VER;
   const tv=$('tag-ver');if(tv)tv.textContent=APP_VER;
