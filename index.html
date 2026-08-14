@@ -1205,17 +1205,17 @@ function phasePre(){
     S.pot.reb=Math.min(80,S.pot.reb+8);S.pot.jmp=Math.min(80,S.pot.jmp+8);S.exp+=10;
     card('gold','隱藏素質解鎖：晚抽高',`體檢報告上的數字讓所有人重看一次——你居然還在長。<b class="hl">身高 +${g} 公分（${S.hgt}）</b>，籃板與彈跳潛力 +8。`);
   }
-  /* 衰退 */
+  /* 衰退（起始 30→33 歲，第二階段 33→36 同步順延，3D 減免窗口 36→39） */
   const dAge=S.age-(S.traits.disc?2:0);
-  if(dAge>=30){
-    const dec=dAge>=33?4+(dAge-33):2;
+  if(dAge>=33){
+    const dec=dAge>=36?4+(dAge-36):2;
     AKEYS.forEach(k=>{
       let x=dec;
       if(k==='jmp'||k==='sta')x+=1;
       if(k==='tre'||k==='iq')x=Math.ceil(dec/2);
-      if(S.traits.threeD&&dAge<36)x=Math.max(0,x-2);
+      if(S.traits.threeD&&dAge<39)x=Math.max(0,x-2);
       S.ab[k]=clamp(S.ab[k]-x,1,80);});
-    card('bad','歲月不饒人',`${dAge>=33?'第二階段':'第一階段'}衰退：全能力 <b class="dn">−${dec}</b>（彈跳／體能再多 1，三分與 IQ 只扣一半${S.traits.threeD?'，3D 之神再減 2':''}）。`);
+    card('bad','歲月不饒人',`${dAge>=36?'第二階段':'第一階段'}衰退：全能力 <b class="dn">−${dec}</b>（彈跳／體能再多 1，三分與 IQ 只扣一半${S.traits.threeD?'，3D 之神再減 2':''}）。`);
     board(0);
   }
   if(S.rehab>0){S.rehab--;S.skipMid=true;S.seasonFactor=0;
@@ -2332,7 +2332,7 @@ function endGame(reason){
 }
 
 /* ============ 啟動 ============ */
-const APP_VER='v1.2';
+const APP_VER='v1.3';
 let selStyle='G';
 (function(){const v=$('ver-badge');if(v)v.textContent=APP_VER;
   const tv=$('tag-ver');if(tv)tv.textContent=APP_VER;
